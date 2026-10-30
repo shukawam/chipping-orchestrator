@@ -89,6 +89,7 @@ __all__ = [
     "MAX_PARALLEL_ISSUES_PER_REPO",
     "MAX_RETRIES_PER_DAY",
     "MAX_REVIEW_ROUNDS",
+    "OPEN_PR_AS_DRAFT",
     "ORCHESTRATOR_BASE_BRANCH",
     "PICKUP_LABEL",
     "POLL_INTERVAL",
@@ -456,6 +457,11 @@ DECOMPOSE: bool = _RESOLVED["DECOMPOSE"]
 # which then stands in for the issue author's own allowlist check. Stages an
 # issue already carries are never gated by it.
 PICKUP_LABEL: str = _RESOLVED["PICKUP_LABEL"]
+
+# Open every pull request this orchestrator creates as a draft. Off (the
+# default) opens ready-for-review pull requests, as before. Nothing here ever
+# marks a draft ready: that stays a human's call, like the merge itself.
+OPEN_PR_AS_DRAFT: bool = _RESOLVED["OPEN_PR_AS_DRAFT"]
 
 # The size ceiling one implementation candidate may publish under, counted in
 # textual lines the prospective pull-request diff ADDS -- the frozen remote

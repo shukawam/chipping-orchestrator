@@ -170,3 +170,22 @@ class PickupLabelConfigTest(unittest.TestCase):
     def test_value_is_stripped(self) -> None:
         config = _reload.load_config({"PICKUP_LABEL": "  agent-ready "})
         self.assertEqual(config.PICKUP_LABEL, "agent-ready")
+
+
+# Default-off boolean switches: the fork's opt-in behaviors, each off unless
+# an operator names it, and parsed by the same strict truthy set.
+_DEFAULT_OFF_SWITCHES = ("OPEN_PR_AS_DRAFT",)
+
+
+class DefaultOffSwitchConfigTest(unittest.TestCase):
+    def test_default_is_off(self) -> None:
+        config = _reload.load_config()
+        for switch in _DEFAULT_OFF_SWITCHES:
+            with self.subTest(switch=switch):
+                self.assertFalse(getattr(config, switch))
+
+    def test_truthy_spellings_turn_on(self) -> None:
+        for switch, spelling in itertools.product(_DEFAULT_OFF_SWITCHES, _TRUTHY_SPELLINGS):
+            with self.subTest(switch=switch, value=spelling):
+                config = _reload.load_config({switch: spelling})
+                self.assertTrue(getattr(config, switch))

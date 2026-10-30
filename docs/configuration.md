@@ -510,6 +510,8 @@ examples.
   replaces the issue-author check at pickup, and a label history that cannot be read admits nobody. Stages an issue
   already carries (`workflow:*`, applied by the orchestrator or by hand) are never gated, so removing the label from an
   issue in flight does not stop it
+- `OPEN_PR_AS_DRAFT` — default `off`. open every pull request the orchestrator creates (implementation and
+  discussion plan PRs) as a draft. The orchestrator never marks a draft ready for review; a human does, before merging
 - `DECOMPOSE` — default `on`. enable the `decomposing` stage; `off` reverts to the legacy
   "no label → `workflow:implementing`" pickup, and sends an issue already sitting on `workflow:decomposing` the same
   way through that stage's own handler (once any half-finished split above it is settled) rather than spawning

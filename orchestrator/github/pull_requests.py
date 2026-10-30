@@ -17,6 +17,7 @@ from github import GithubException
 from github.IssueComment import IssueComment
 from github.PullRequest import PullRequest
 
+from orchestrator import config
 from orchestrator.github import (
     pull_request_reads as _pr_reads,
     pull_request_reports as _pr_reports,
@@ -66,12 +67,16 @@ class GitHubPullRequestMixin(
         title: str,
         body: str,
     ) -> PullRequest:
-        """Open a pull request for a published issue branch."""
+        """Open a pull request for a published issue branch.
+
+        Opened as a draft when `OPEN_PR_AS_DRAFT` is on.
+        """
         return self.repo.create_pull(
             title=title,
             body=body,
             head=branch,
             base=base,
+            draft=config.OPEN_PR_AS_DRAFT,
         )
 
     def edit_pr_body(self, pr: PullRequest, body: str) -> None:
