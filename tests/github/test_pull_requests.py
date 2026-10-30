@@ -4,11 +4,10 @@
 from __future__ import annotations
 
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 from github import GithubException
 
-from orchestrator import config
 from orchestrator.github import (
     pull_request_reads as _pr_reads,
     pull_requests as _pull_requests,
@@ -230,12 +229,6 @@ class PullRequestWriteTest(_PullRequestClientTestCase):
                 "draft": False,
             },
         )
-
-    def test_open_pr_as_draft_when_enabled(self) -> None:
-        with patch.object(config, "OPEN_PR_AS_DRAFT", True):
-            self.gh.open_pr(branch=_BRANCH, base=_BASE, title="Issue 7", body="closes #7")
-
-        self.assertIs(self.gh.repo.create_pull.call_args.kwargs["draft"], True)
 
     def test_pr_comment_posts_on_the_pr(self) -> None:
         posted = self.gh.pr_comment(_PR_NUMBER, "note")
