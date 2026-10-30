@@ -58,6 +58,22 @@ _EARLIER = "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
 # The operator control applied while a decision's readings are taken.
 _PAUSED = "paused"
 
+# The issue's labels once that control is applied.
+_CONTROLLED = (FakeLabel(str(WorkflowLabel.IMPLEMENTING)), FakeLabel(_PAUSED))
+_PAUSED_LABELS = MappingProxyType({"labels": _CONTROLLED})
+
+# The issue's closed flag, and a pull request's state once closed.
+_CLOSED = "closed"
+
+# What the issue's fetch right before an effect finds moved behind the
+# readings its decision took: an admitted issue closed or its body edited,
+# and an issue proved closed reopened.
+_MOVED_BEHIND = MappingProxyType({
+    "closed behind an admission": (Turn(), MappingProxyType({_CLOSED: True})),
+    "edited behind an admission": (Turn(), MappingProxyType({"body": "Also require a second behavior."})),
+    "reopened behind a proof of its end": (Turn(closed=True), MappingProxyType({_CLOSED: False})),
+})
+
 # The pinned readings a dispatch takes up to its retirement commit's own: the
 # dispatcher's, the capture's read-back, the retirement's, and its commit's.
 _COMMIT_READING = 4
@@ -82,6 +98,12 @@ _RECEIPTED = MappingProxyType({_RECEIPTS: {"floor": 0, "recent": [list(_RECEIPT)
 # A capture whose run's usage checkpoint never confirmed.
 _UNACCOUNTED = MappingProxyType({"accounting": "unresolved"})
 
+# The recorded pull request merged, and the `discussion` plan it carried as
+# the implementing road reads it -- the head it stands on, or one pushed past.
+_MERGED = MappingProxyType({"state": _CLOSED, "merged": True})
+_PLAN = MappingProxyType({"discussion_plan_sha": _support.BEFORE})
+_PAST_THE_PLAN = MappingProxyType({"discussion_plan_sha": _EARLIER})
+
 # Each road whose records still stand, and the move that leaves them so: a
 # drift on a pull-request stage beside its pull request, a refresh beside the
 # debt of the head its run started on, and an unaccounted run read back since.
@@ -91,6 +113,9 @@ _STANDING = MappingProxyType({
         Turn(edits=_debt_of(_support.BEFORE)), None, pull_request=True, label=_ON_VALIDATING, road=_REFRESH,
     ),
     "accounting read back": Case(Turn(members=_UNACCOUNTED, edits=_RECEIPTED), None),
+    "implementation beside its merged plan": Case(
+        Turn(edits=_PLAN, pull_request=_MERGED), None, pull_request=True,
+    ),
 })
 
 # Another current-layout branch than the one the issue's record pins.
@@ -105,7 +130,10 @@ _STALE = MappingProxyType({
     "branch moved": Case(Turn(), _Reason.BRANCH_MOVED, run=(("branch", _OTHER_BRANCH),)),
     "checkout moved": Case(Turn(head=_support.ELSEWHERE), _Reason.CHECKOUT_MOVED),
     "pull request closed": Case(
-        Turn(pull_request=MappingProxyType({"state": "closed"})), _Reason.PULL_REQUEST_ENDED, pull_request=True,
+        Turn(pull_request=MappingProxyType({"state": _CLOSED})), _Reason.PULL_REQUEST_ENDED, pull_request=True,
+    ),
+    "pull request merged past its plan": Case(
+        Turn(edits=_PAST_THE_PLAN, pull_request=_MERGED), _Reason.PULL_REQUEST_ENDED, pull_request=True,
     ),
     "pull request pushed over": Case(
         Turn(pull_request=MappingProxyType({"sha": _support.ELSEWHERE})), _Reason.PULL_REQUEST_MOVED,
@@ -335,22 +363,37 @@ class EffectRecheckTest(unittest.TestCase):
         # handed on, or run.
         for name, turn in _BEHIND_THE_PROOF.items():
             with self.subTest(name):
-                seen = self._paused_behind(turn)
+                seen = self._fetched_behind(turn, _PAUSED_LABELS)
 
-                self.assertTrue(seen.says(_Reason.ISSUE_UNREAD, _Standing.UNCERTAIN), seen.said)
-                self.assertEqual(_stage(seen.after), _records.CaptureStage.PENDING)
-                self.assertEqual(seen.writes, 0)
-                self.assertEqual((seen.ran, seen.handed), ((), ()))
+                self._kept(seen, _Reason.ISSUE_UNREAD)
 
-    def _paused_behind(self, turn: Turn) -> _dispatch.Observed:
-        """A dispatch after `turn`, `paused` applied behind the first fetch of the issue its admission takes."""
+    def test_a_move_behind_the_readings_keeps_it(self) -> None:
+        # Closed, or edited to ask for something else, behind an admission's
+        # readings, the issue the owner would be handed is not the one they
+        # admitted; reopened behind a proof that its work ended, it is not
+        # the one the retirement was proved on. Each holds, nothing written,
+        # handed on, or run, for the next dispatch to decide afresh.
+        for name, (turn, moved) in _MOVED_BEHIND.items():
+            with self.subTest(name):
+                seen = self._fetched_behind(turn, moved)
+
+                self._kept(seen, _Reason.ISSUE_MOVED)
+
+    def _fetched_behind(self, turn: Turn, moved) -> _dispatch.Observed:
+        """A dispatch after `turn`, the issue fetched with `moved` behind the first fetch its admission takes."""
         world = _support.CapturedWorld()
         world.captured()
-        labels = [*world.issue.labels, FakeLabel(_PAUSED)]
-        paused = replace(world.issue, labels=labels)
-        fetched = itertools.chain((world.issue,), itertools.repeat(paused))
+        refetched = replace(world.issue, **moved)
+        fetched = itertools.chain((world.issue,), itertools.repeat(refetched))
         with patch.object(world.github, "get_issue", side_effect=fetched):
             return _dispatch.observed(world, _dispatch.RoadOwner(), turn)
+
+    def _kept(self, seen: _dispatch.Observed, reason: _Reason) -> None:
+        """The dispatch held the capture as uncertain for `reason`, with nothing written, handed on, or run."""
+        self.assertTrue(seen.says(reason, _Standing.UNCERTAIN), seen.said)
+        self.assertEqual(_stage(seen.after), _records.CaptureStage.PENDING)
+        self.assertEqual(seen.writes, 0)
+        self.assertEqual((seen.ran, seen.handed), ((), ()))
 
 
 if __name__ == "__main__":

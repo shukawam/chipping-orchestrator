@@ -39,7 +39,7 @@ class Turn:
     `labels` are the issue's labels now, and `refetched` the ones a fetch of
     it during the dispatch reads -- a control applied meanwhile; `comment` a
     human's added to the thread; `head` and `identity` the checkout's;
-    `pull_request` the state and head its pull request is read with; `edits`
+    `pull_request` the state, merge, and head its pull request is read with; `edits`
     a hand edit of the pinned comment (`CapturedWorld.hand_edit`) and
     `members` one of the capture's own members; `unanswered` a client request
     GitHub leaves unanswered during the dispatch -- the pinned read's second
@@ -115,11 +115,12 @@ def _moved_capture(world: _support.CapturedWorld, members: Mapping) -> None:
 
 
 def _moved_pull_request(world: _support.CapturedWorld, moves: Mapping) -> None:
-    """Move the recorded pull request: its `state`, and the `sha` its head stands on."""
+    """Move the recorded pull request: its `state`, whether it was `merged`, and the `sha` its head stands on."""
     if not moves:
         return
     pull_request = world.github.get_pr(_support.PR_NUMBER)
     pull_request.state = moves.get("state", pull_request.state)
+    pull_request.merged = moves.get("merged", pull_request.merged)
     pull_request.head.sha = moves.get("sha", pull_request.head.sha)
 
 

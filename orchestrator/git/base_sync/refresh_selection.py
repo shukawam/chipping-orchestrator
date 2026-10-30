@@ -271,10 +271,15 @@ def _state_holds_the_branch(
     attempt -- an unreadable remote is enough -- and either takes the commit
     the captured report is about off the branch before anything decided on
     that capture. So the dispatcher decides the capture first, ahead of the
-    anchor's hold (`workflow/engine/completion_recovery.py`), and retires it
-    there as invalidated, since no road may hand a report on over a rewrite
-    no recovery has finished; the next refresh then recovers the anchor as it
-    always would, and the two never wait on each other. A capture nobody can
+    anchor's hold (`workflow/engine/completion_recovery.py`), and on its own
+    road retires it there as invalidated, since no road may hand a report on
+    over a rewrite no recovery has finished; the next refresh then recovers
+    the anchor as it always would, and the two never wait on each other. A
+    capture waiting through a dependency hold, the `ready` decision, or an
+    unlabeled issue is left captured and keeps the branch here; none of those
+    labels is one this refresh drives, so the dispatcher's hold answers the
+    anchor itself there, by a clear or a park that resets nothing, and the
+    stage runs once it is down. A capture nobody can
     read, and an anchor that reads as no commit, are held on both sides until
     a human repairs or removes them, as damage is everywhere. A capture is
     taken only by a handler the anchor's hold keeps back, and a capture holds

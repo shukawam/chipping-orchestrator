@@ -20,21 +20,24 @@ reads as the one the dispatch read, holds.
 
 The issue is fetched again next, for the labels and controls as they stand:
 a control applied, or a label moved, during the dispatch holds the tick for
-the next one to read. An auto-rebase anchor standing beside the capture is
-asked next: the branch is mid-rewrite, and the anchor's recovery may reset or
-replace the commit the report is about, so the capture is retired before that
-recovery runs (`dispatch_guards._anchor_holds_the_tick` asks this ahead of
-the anchor's hold). Then the road, and the records it stands on: the pull
-request a pull-request stage's report is owed to, the debt a rewritten-head
-refresh answers, the adjudication a late revision answers
-(`completion_prerequisites`). Work that has ended -- the issue closed,
-or labelled `done` or `rejected` -- and an issue moved onto any other road
-than the one the capture reported on are past its output, and so is a
+the next one to read. Then the road. Work that has ended -- the issue
+closed, or labelled `done` or `rejected` -- and an issue moved onto any other
+road than the one the capture reported on are past its output, and so is a
 handoff one of whose frozen records another road has moved since
 (`completion_frozen.moved_since`). A dependency hold, the `ready` decision
 that answers it, and an issue a human took the workflow label off are waited
 through instead: the capture is neither handed on nor discarded there, and
-the stage runs as it would without one.
+the stage runs as it would without one -- beside an auto-rebase anchor too,
+since none of those labels is one the base refresh drives, and the anchor's
+hold answers the anchor there by a clear or a park that leaves the checkout
+where it stands. On the capture's own road an anchor standing beside it is
+asked next: the branch is mid-rewrite, and the anchor's recovery may reset or
+replace the commit the report is about, so the capture is retired before that
+recovery runs (`dispatch_guards._anchor_holds_the_tick` asks this ahead of
+the anchor's hold). Then the records the road stands on: the pull request a
+pull-request stage's report is owed to, the debt a rewritten-head refresh
+answers, the adjudication a late revision answers
+(`completion_prerequisites`).
 
 The requirements are read off the issue as a developer prompt reads them
 (`prompt_context._delivered_thread`), so the fingerprint is comparable with
@@ -44,6 +47,12 @@ longer has. Then the branch and the checkout it reported on
 (`completion_sources`); then, for a run whose usage was captured unaccounted,
 the receipt of it read back beside readable counters, without which the
 capture is held; and last the pull request.
+
+The readings of the issue itself are taken once more over the fetch the
+recovery takes right before an effect (`at_the_effect`): a handoff stands on
+an issue open and asking for the requirements the run was handed, and a
+retirement on work ended or requirements moved, and either can change
+between the first fetch and that one.
 
 Nothing here writes, charges a run, clears a park, or grants an invocation.
 """
@@ -89,6 +98,13 @@ _RECORD_UNREAD = _models.Decision(_Standing.UNCERTAIN, _Reason.RECORD_UNREAD)
 
 _ISSUE_UNREAD = _models.Decision(_Standing.UNCERTAIN, _Reason.ISSUE_UNREAD)
 
+_ISSUE_MOVED = _models.Decision(_Standing.UNCERTAIN, _Reason.ISSUE_MOVED)
+
+_ENDED = _models.Decision(_Standing.INVALID, _Reason.ENDED)
+
+# The INVALID answers a reading of the issue itself proved, which its last fetch has to prove again.
+_ISSUE_BORNE = frozenset((_Reason.ENDED, _Reason.REQUIREMENTS_MOVED))
+
 # What a read-back refused for says about the capture itself, where it says
 # anything: every other refusal is a comment that would not read as current.
 _REFUSED_AS = MappingProxyType({
@@ -119,8 +135,8 @@ def decided(
     if isinstance(fresh, _models.Decision):
         return fresh
     refused = (
-        _prerequisites.anchor_refusal(state)
-        or _road_refusal(fresh, label, state, capture)
+        _road_refusal(fresh, label, state, capture)
+        or _prerequisites.anchor_refusal(state)
         or _prerequisites.road_refusal(state, capture)
     )
     refused = refused or (
@@ -169,12 +185,46 @@ def live_issue(gh: GitHubClient, issue: Issue, label: WorkflowLabel | None) -> I
     return fresh
 
 
+def at_the_effect(
+    gh: GitHubClient, fresh: Issue, label: WorkflowLabel | None, state: PinnedState, decision: _models.Decision,
+) -> _models.Decision:
+    """`decision`, where `fresh`, the issue fetched right before its effect, reads as the decision read it; else a hold.
+
+    An admission stood on an issue open and asking for the requirements the
+    run was handed, and an ended or edited issue's retirement on the reading
+    that proved it so: those readings are taken again over `fresh`, and an
+    answer that differs -- the issue closed, reopened, or edited behind them
+    -- holds the capture with nothing written or handed on, for the next
+    dispatch to decide afresh. Every other INVALID answer stands: a label
+    moved holds before this is asked, and the records it was proved on bind
+    the retirement's own commit. An admission that stands is handed on with
+    `fresh` as its issue.
+    """
+    if decision.admitted is None and decision.reason not in _ISSUE_BORNE:
+        return decision
+    again = _issue_refusal(gh, fresh, label, state)
+    if decision.admitted is not None and again is None:
+        return _models.Decision(_Standing.APPLICABLE, admitted=decision.admitted.refetched(fresh))
+    if decision.admitted is None and again == decision:
+        return decision
+    return again if again is not None and again.standing is _Standing.UNCERTAIN else _ISSUE_MOVED
+
+
+def _issue_refusal(
+    gh: GitHubClient, fresh: Issue, label: WorkflowLabel | None, state: PinnedState,
+) -> _models.Decision | None:
+    """Why `fresh` reads as work ended or requirements moved under the capture `state` carries, or None."""
+    if _issues.issue_is_closed(fresh) or label in _TERMINAL_LABELS:
+        return _ENDED
+    return _requirements_refusal(gh, fresh, state, _state.read(state))
+
+
 def _road_refusal(
     fresh: Issue, label: WorkflowLabel | None, state: PinnedState, capture: _records.CompletionCapture,
 ) -> _models.Decision | None:
     """Why the road `capture` reported on is not the one the issue is on, or None."""
     if _issues.issue_is_closed(fresh) or label in _TERMINAL_LABELS:
-        return _models.Decision(_Standing.INVALID, _Reason.ENDED)
+        return _ENDED
     if label is None or label in _WAITING_LABELS:
         return _models.Decision(_Standing.WAITING, _Reason.WAITING)
     if label != capture.handoff.origin:

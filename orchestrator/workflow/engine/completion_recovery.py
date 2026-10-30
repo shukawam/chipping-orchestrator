@@ -14,8 +14,10 @@ own road), and the in-tick handoff into `implementing` a `ready` decision or
 a single verdict makes asks the same question before that handler runs.
 Beside a standing auto-rebase anchor it is asked first of all, ahead of the
 anchor's hold (`dispatch_guards._anchor_holds_the_tick`): the refresh holds
-the branch for the capture there too, and the capture is retired before the
-anchor's recovery may reset or push the commit it reported on.
+the branch for the capture there too, and on its own road the capture is
+retired before the anchor's recovery may reset or push the commit it reported
+on. Under a dependency hold it waits there as anywhere, and the anchor's hold
+answers the anchor itself, by a clear or a park that moves no checkout.
 
 What is owed is one reading's answer (`completion_admission`). An APPLICABLE
 capture is handed, admitted and immutable, to the owner of the road it was
@@ -29,10 +31,12 @@ invocation it was, owns nothing but the capture, is decided on the reading
 the proof was taken over, and lets the tick carry on as it would with no
 capture; a retirement that did not land -- refused because the comment moved
 since that reading, a human's repair of the proof included -- holds the tick
-for a later reading. UNCERTAIN and DAMAGED captures hold the tick with
-nothing written. A WAITING one stands down with nothing written, so a
-dependency walk, the `ready` decision, or a human's unlabeled issue is left
-to its own stage.
+for a later reading. Before either effect the issue is fetched once more, and
+a control, a relabel, a close, a reopening, or an edit found there holds the
+capture (`completion_admission.at_the_effect`). UNCERTAIN and DAMAGED
+captures hold the tick with nothing written. A WAITING one stands down with
+nothing written, so a dependency walk, the `ready` decision, or a human's
+unlabeled issue is left to its own stage.
 
 An operator's `paused` or `backlog` keeps all of it off: the dispatcher skips
 a held issue before any guard, and on the one road it lets a held issue
@@ -91,7 +95,7 @@ def capture_holds_the_tick(
     if not unheld or isinstance(_state.read(state), _records.ResolvedCapture):
         return False
     decided = _admission.decided(gh, spec, issue, label, state)
-    decision = _held_at_the_effect(gh, issue, label, decided)
+    decision = _held_at_the_effect(gh, issue, label, state, decided)
     if decision.standing is _models.Standing.WAITING:
         log.info(
             "issue=#%d carries a captured completion and %s; leaving it captured for the %r stage",
@@ -111,25 +115,24 @@ def capture_holds_the_tick(
 
 
 def _held_at_the_effect(
-    gh: GitHubClient, issue: Issue, label: WorkflowLabel | None, decision: _models.Decision,
+    gh: GitHubClient, issue: Issue, label: WorkflowLabel | None, state: PinnedState, decision: _models.Decision,
 ) -> _models.Decision:
     """`decision`, or the hold the issue read once more right before its effect makes of it.
 
     A retirement and a handoff are effects, and the readings behind either take
-    requests a control or a relabel can land between: so the controls and the
-    label are fetched again behind them (`completion_admission.live_issue`),
+    requests a control, a relabel, a close, or an edit can land between: so
+    the issue is fetched again behind them (`completion_admission.live_issue`),
     and a fetch that fails, a `paused` or `backlog` applied, or a label moved
-    holds the capture with nothing written. An admitted capture is handed on
-    with the issue that last fetch answered.
+    holds the capture with nothing written. Its state and requirements are
+    then read again over that fetch (`completion_admission.at_the_effect`),
+    and an admitted capture is handed on with the issue it answered.
     """
     if decision.standing is not _models.Standing.INVALID and decision.admitted is None:
         return decision
     fresh = _admission.live_issue(gh, issue, label)
     if isinstance(fresh, _models.Decision):
         return fresh
-    if decision.admitted is None:
-        return decision
-    return _models.Decision(_models.Standing.APPLICABLE, admitted=decision.admitted.refetched(fresh))
+    return _admission.at_the_effect(gh, fresh, label, state, decision)
 
 
 def _invalidates(gh: GitHubClient, issue: Issue, state: PinnedState, reason: _models.Reason | None) -> bool:

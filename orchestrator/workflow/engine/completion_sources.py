@@ -27,9 +27,18 @@ request merged or closed ended the work the report was for. One nobody could
 read holds the capture, and so does one read without its head's branch,
 commit, or repository: a mismatch is proved only against a reading that has
 all three.
+
+On the implementing road the recorded pull request can be another stage's:
+the `discussion` stage's plan, which a human merges to agree to the design
+and then relabels, so the implementation is still owed its own publication.
+That road's own classification tells the two apart
+(`implementing.handler._recorded_pr_is_the_plan`), asked of the head this
+one reading took, and a pull request it reads as the plan is none of the
+run's: nothing about its state, branch, or head refuses the capture.
 """
 from __future__ import annotations
 
+import importlib
 import logging
 from dataclasses import dataclass
 
@@ -43,7 +52,9 @@ from orchestrator.workflow.engine import (
     completion_records as _records,
     completion_recovery_models as _models,
     report_record_values as _record_values,
+    stage_targets as _stage_targets,
 )
+from orchestrator.workflow.state import WorkflowLabel
 
 log = logging.getLogger("orchestrator.workflow")
 
@@ -85,13 +96,7 @@ def pull_request_head(
     reading = _pull_request_reading(gh, state.get(_PR_NUMBER))
     if reading is None:
         return _UNREAD
-    if reading.state != _OPEN:
-        return _models.Decision(_models.Standing.INVALID, _models.Reason.PULL_REQUEST_ENDED)
-    on_the_run = reading.head in {capture.run.before_sha, capture.run.source_sha}
-    own_branch = reading.branch == capture.run.branch and gh.is_own_repository(reading.repository)
-    if not (own_branch and on_the_run):
-        return _models.Decision(_models.Standing.INVALID, _models.Reason.PULL_REQUEST_MOVED)
-    return reading.head
+    return _reading_refusal(gh, state, capture, reading) or reading.head
 
 
 @dataclass(frozen=True)
@@ -102,6 +107,23 @@ class _PullRequestReading:
     branch: str | None
     head: str | None
     repository: str | None
+
+
+def _reading_refusal(
+    gh: GitHubClient, state: PinnedState, capture: _records.CompletionCapture, reading: _PullRequestReading,
+) -> _models.Decision | None:
+    """Why the pull request `reading` read refuses `capture`, or None where it is the run's or the discussion's plan."""
+    if capture.handoff.origin is WorkflowLabel.IMPLEMENTING:
+        implementing = importlib.import_module(_stage_targets._IMPLEMENTING_HANDLER_OWNER)
+        if implementing._recorded_pr_is_the_plan(state, reading.head):
+            return None
+    if reading.state != _OPEN:
+        return _models.Decision(_models.Standing.INVALID, _models.Reason.PULL_REQUEST_ENDED)
+    on_the_run = reading.head in {capture.run.before_sha, capture.run.source_sha}
+    own_branch = reading.branch == capture.run.branch and gh.is_own_repository(reading.repository)
+    if not (own_branch and on_the_run):
+        return _models.Decision(_models.Standing.INVALID, _models.Reason.PULL_REQUEST_MOVED)
+    return None
 
 
 def _own_head(spec: _config_models.RepoSpec, issue_number: int, capture: _records.CompletionCapture) -> str:

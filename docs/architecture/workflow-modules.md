@@ -481,7 +481,8 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             developer completion is decided directly behind that debt, and behind the adjudication's
                             reconciliation on its own road, ahead of the reuse guard and the handler
                             (`completion_recovery.py`) -- and, beside a standing auto-rebase anchor, ahead of that
-                            anchor's hold, where it is retired. Directly behind
+                            anchor's hold, where it is retired on its own road and waits under a dependency hold.
+                            Directly behind
                             the agent-run-limit hold, and ahead of the adjudication's step aside, every reconciliation,
                             and the reuse guard, `stages/decomposition/split_seeds.py` holds an ordinary split's child
                             whose seed is not the one the receipt in its body owes it -- no `parent_number` naming that
@@ -1200,17 +1201,18 @@ workflow/                   publishes labels, transition guards, and the lazy pe
     completion_recovery_models.py the five answers one reading of a pending capture gives -- applicable, invalid,
                             uncertain, damaged, and waiting -- the reason each is said with, and the immutable
                             `AdmittedCompletion` an applicable capture is handed to its road's owner as: the
-                            capture, the issue read afresh, the label, the dispatcher's reading, and the pull
-                            request's head, and no charge, grant, or park
+                            capture, the issue as its last fetch read it, the label, the dispatcher's reading, and
+                            the pull request's head, and no charge, grant, or park
     completion_admission.py one reading of a pending capture, the cheapest first and writing nothing: its read-back
                             through the checkpoint, the only source it is read from; the issue fetched again for
-                            its controls, label, and state; an auto-rebase anchor beside it, which retires it or,
-                            reading as no commit, holds it; the
-                            road it reported on, the records its handoff froze, and what that road stands on
-                            (`completion_prerequisites.py`); the requirements, fingerprinted as a developer prompt
-                            is handed them; and the sources behind them, an unaccounted run's receipt read before
-                            the pull request. A dependency hold, the `ready` decision, and an unlabeled issue are
-                            waited through
+                            its controls, label, and state; the road it reported on and the records its handoff
+                            froze; on that road, an auto-rebase anchor beside it, which retires it or, reading as
+                            no commit, holds it; what the road stands on (`completion_prerequisites.py`); the
+                            requirements, fingerprinted as a developer prompt is handed them; and the sources
+                            behind them, an unaccounted run's receipt read before the pull request. A dependency
+                            hold, the `ready` decision, and an unlabeled issue are waited through, beside an anchor
+                            too. `at_the_effect` reads the issue's state and requirements again over the fetch
+                            taken right before a retirement or a handoff, and holds the capture where they moved
     completion_evidence.py  what an invalidation is decided on: the whole reading its proof was taken over, asked of
                             the candidate the retirement's commit derives (`DecidedOn`), so a field moved, restored,
                             or added since refuses it as EVIDENCE_MOVED
@@ -1229,16 +1231,20 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             this repository, at the head the run started on or reported on -- are still the ones a
                             pending capture reported on; a reading that fails or misses its head's branch, commit,
                             or repository, or a checkout nothing proves the issue's own, holds the capture rather
-                            than proving it stale
+                            than proving it stale. On the implementing road a pull request that road reads as the
+                            `discussion` stage's plan (`stages/implementing/handler.py`, resolved when called) is
+                            none of the run's, merged or not
     completion_recovery.py  the dispatch guard that decides a pending capture ahead of every stage handler, the
-                            issue's controls and label fetched once more right before a retirement or a handoff: an
+                            issue fetched once more right before a retirement or a handoff, for its controls,
+                            label, state, and requirements: an
                             applicable one handed to its road's owner (`ROUTE_OWNERS`, resolved when called -- none
                             in this build, so the stage is held), a stale one retired `invalidated` by the
                             checkpoint's guarded retirement, an uncertain or damaged one held with nothing written,
                             and a hold it waits through, or an operator's hard-skip on the observed-close road,
                             stood down for. `dispatch_guards.py` asks it behind the rewritten-head report debt, on
                             the adjudication's road, and ahead of a standing auto-rebase anchor's hold, where the
-                            capture is retired before that anchor's recovery may reset or push; and
+                            capture is retired on its own road before that anchor's recovery may reset or push, and
+                            left waiting under a dependency hold; and
                             `stages/decomposition/handoff.py` and `ready_handoff.py` ask it before the implementing
                             handler they run in-tick
     report_refusal_notices.py what a human and the log are told about a delivery that refusal held: one notice per

@@ -993,18 +993,23 @@ than a second source of truth: where the two disagree, the handler pages are aut
                                    pull request, debt, or adjudication it
                                    stands on, the requirements, the branch,
                                    the checkout, an unaccounted run's
-                                   receipt, and the pull request. APPLICABLE
-                                   is handed, admitted, to its road's owner
-                                   -- none in this build, so the handler is
-                                   HELD; a proof it is stale (ended,
-                                   relabelled, a frozen record,
+                                   receipt, and the pull request -- a
+                                   discussion plan the implementing road
+                                   reads as one is none of the run's.
+                                   APPLICABLE is handed, admitted, to its
+                                   road's owner -- none in this build, so
+                                   the handler is HELD; a proof it is stale
+                                   (ended, relabelled, a frozen record,
                                    requirements, branch, checkout, or pull
                                    request moved, its road's pull request,
                                    debt, or adjudication gone) RETIRES it
                                    invalidated, owning the capture alone and
                                    held to the whole reading that proved it,
-                                   the controls read again before the write,
-                                   and the handler runs; a read nobody could
+                                   the issue's controls, label, state, and
+                                   requirements read again before the write
+                                   or a handoff, and the handler runs; a
+                                   close, reopening, or edit landing
+                                   meanwhile, a read nobody could
                                    take, an unaccounted run's receipt not
                                    read back, and a damaged claim HOLD with
                                    nothing written;
@@ -1014,8 +1019,11 @@ than a second source of truth: where the two disagree, the handler pages are aut
                                    or granted. The in-tick handoff ready makes
                                    into workflow:implementing asks it too.
                                    Beside an auto-rebase anchor it is asked
-                                   AHEAD of the anchor's hold and RETIRED --
-                                   HELD where the anchor reads as no commit --
+                                   AHEAD of the anchor's hold and, on its own
+                                   road, RETIRED -- HELD where the anchor
+                                   reads as no commit, KEPT under blocked,
+                                   ready, or no label, where that hold clears
+                                   or parks the anchor and resets nothing --
                                    the refresh having held the branch for it,
                                    so the anchor's recovery resets or pushes
                                    nothing the capture is about first

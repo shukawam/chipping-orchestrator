@@ -6,8 +6,10 @@ An operator's `paused` or `backlog`, a dependency hold, the `ready`
 decision that answers one, an issue a human unlabeled, and a spent run
 ledger each keep the capture as it stands: nothing is handed on, retired,
 released, re-baselined, or charged, and each stage that runs there runs as
-it would with no capture. A handoff frozen over a pinned record is handed on
-only while that record still reads as the launch read it.
+it would with no capture -- a dependency hold beside an auto-rebase anchor
+included, which the anchor's own hold answers while the base refresh keeps
+the branch for the capture. A handoff frozen over a pinned record is handed
+on only while that record still reads as the launch read it.
 """
 from __future__ import annotations
 
@@ -15,6 +17,7 @@ import unittest
 from types import MappingProxyType
 from unittest.mock import patch
 
+from orchestrator.git.base_sync import refresh_selection as _refresh_selection
 from orchestrator.github.labels import PAUSED_LABEL
 from orchestrator.workflow.engine import (
     completion_checkpoint as _checkpoint,
@@ -60,6 +63,15 @@ _PAUSED = Turn(labels=(_IMPLEMENTING, PAUSED_LABEL))
 _PARKED = Turn(edits=_RUN_LIMIT_PARK)
 
 _RECORD_MOVED = Turn(edits=MappingProxyType({_FROZEN_RECORD: _ROUND_MOVED}))
+
+_BLOCKED = Turn(labels=(str(WorkflowLabel.BLOCKED),))
+
+# An auto-rebase anchor a hand edit left beside the capture, the park its own
+# hold answers one carrying no terms with, and a human's reconciliation of both.
+_ANCHOR = "pending_auto_base_rebase_push_sha"
+_ANCHORED = MappingProxyType({_ANCHOR: _support.BEFORE})
+_STRANDED = "auto_base_rebase_failed"
+_RECONCILED = MappingProxyType(dict.fromkeys((_ANCHOR, "awaiting_human", "park_reason"), _support.DROPPED))
 
 # A live late adjudication of the issue's own candidate, measured past its ceiling.
 _ADJUDICATING = MappingProxyType({
@@ -112,6 +124,29 @@ class WaitingCaptureTest(unittest.TestCase):
                 self.assertEqual((seen.ran, seen.handed), (ran, ()))
                 self.assertTrue(seen.untouched)
 
+    def test_an_anchor_beside_a_wait_keeps_it(self) -> None:
+        # The capture waits through the dependency hold rather than being
+        # retired for the anchor: the anchor's own hold answers it, on a
+        # label the base refresh does not drive, with a park that leaves the
+        # checkout where it stands, and holds the walk for that tick. Once a
+        # human reconciles it, the walk runs; the capture is pending all
+        # along, and the refresh keeps its branch on either side.
+        world = _support.CapturedWorld()
+        captured = world.captured()
+        world.hand_edit(**_ANCHORED)
+
+        held = _dispatch.observed(world, _dispatch.RoadOwner(), _BLOCKED)
+        self.assertEqual((held.ran, held.handed), ((), ()))
+        self.assertEqual(held.after["park_reason"], _STRANDED)
+        self.assertTrue(self._branch_kept(world))
+        world.hand_edit(**_RECONCILED)
+        walked = _dispatch.observed(world, _dispatch.RoadOwner())
+
+        self.assertEqual((walked.ran, walked.handed), ((_NUMBER,), ()))
+        self.assertTrue(self._branch_kept(world))
+        for seen in (held, walked):
+            self.assertEqual(_support.read_capture(seen.after), captured)
+
     def test_an_operator_control_keeps_all_off(self) -> None:
         # Applied before the dispatch, nothing is read and nothing reached;
         # and on the one road a held issue is let through -- a close somebody
@@ -154,6 +189,11 @@ class WaitingCaptureTest(unittest.TestCase):
 
         self.assertEqual((seen.ran, seen.handed), ((_NUMBER,), ()))
         self.assertTrue(seen.untouched)
+
+    def _branch_kept(self, world: _support.CapturedWorld) -> bool:
+        """Whether the base refresh holds the world's branch still over its pinned comment as it reads now."""
+        state = world.github.read_pinned_state(world.issue)
+        return _refresh_selection._state_holds_the_branch(_NUMBER, state)
 
 
 class FrozenHandoffTest(unittest.TestCase):

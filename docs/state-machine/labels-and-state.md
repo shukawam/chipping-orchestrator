@@ -793,9 +793,12 @@ the report reconciliation, that hold keeps back, so a freeze on any of them as w
 move. A capture is answered ahead of that hold instead: the anchor's recovery resets the checkout onto the anchor, or
 pushes a replay, whenever it cannot prove the attempt — an unreadable remote is enough — which would take the commit
 the captured report is about off the branch before anything decided on it, so the dispatcher decides the capture
-first and retires it `invalidated` (no road hands a report on over a rewrite no recovery finished), and the next
-refresh answers the anchor as it always would. A capture nobody can read, an anchor that reads as no commit, or a
-retirement that did not land, keeps both sides where they stand for a human or a later tick. None of
+first and, on its own road, retires it `invalidated` (no road hands a report on over a rewrite no recovery
+finished), and the next refresh answers the anchor as it always would. A capture waiting through a dependency hold,
+the `ready` decision, or an unlabeled issue is left captured: none of those labels is one this refresh drives, so
+the dispatcher's hold answers the anchor itself, by a clear or a stranded park that leaves the checkout where it
+stands. A capture nobody can read, an anchor that reads as no commit, or a retirement that did not land, keeps both
+sides where they stand for a human or a later tick. None of
 them is holding a branch still against a rebase any more — the anchor says one already ran — so the recovery reaches
 the checkout, pushes the replay its record names or puts the branch back on the anchor and asks a human, and leaves
 each record for its owner. A recovery that takes the anchor down and lets the tick go on — the landed clear of an
@@ -2016,14 +2019,16 @@ The keys that matter for the state machine fall into a few groups:
   is handed, admitted, to the owner of its road, which no road has in this build, so the stage is held; stale --
   its road's pull request, report debt, or adjudication gone among the proofs -- it is retired `invalidated` by a
   guarded commit owning the capture alone, its invocation kept, and held to the whole reading the proof was taken
-  over, so a comment that moved since -- a field it lacked restored included -- refuses it, and the issue's controls
-  and label are read once more right before that retirement or a handoff; uncertain or damaged, or held by a control
-  or a relabel landing meanwhile, the stage is held with nothing written, and so is a
-  capture whose run's usage was captured `unresolved` until that run's receipt reads back on the ledger beside
-  readable counters. Beside an auto-rebase anchor it is decided ahead of the anchor's hold and
-  retired, since no road hands a report on over a rewrite no recovery finished -- or held, where the anchor reads as
-  no commit; a late revision is held the same way beside a late record whose measurement nobody can read. Until it
-  is resolved it keeps the issue's checkout out of the base refresh, beside an anchor too
+  over, so a comment that moved since -- a field it lacked restored included -- refuses it, and the issue is read
+  once more right before that retirement or a handoff, for its controls, label, state, and requirements; uncertain
+  or damaged, or held by a control, a relabel, a close, a reopening, or an edit landing meanwhile, the stage is held
+  with nothing written, and so is a capture whose run's usage was captured `unresolved` until that run's receipt
+  reads back on the ledger beside readable counters. On the implementing road a recorded pull request that road
+  reads as the `discussion` stage's plan, merged or not, is none of the run's. Beside an auto-rebase anchor it is
+  decided ahead of the anchor's hold and, on its own road, retired, since no road hands a report on over a rewrite
+  no recovery finished -- or held, where the anchor reads as no commit; under a dependency hold it waits, and the
+  anchor's hold answers the anchor; a late revision is held beside a late record whose measurement nobody can read.
+  Until it is resolved it keeps the issue's checkout out of the base refresh, beside an anchor too
   ([Base refresh](#base-refresh)), and none of it charges a run, clears a park, or grants an invocation.
 - **Rewritten-head report debt.** `developer_report_rewrite_debt` is the report a pull request is owed because this
   orchestrator rewrote its head (`workflow/engine/report_rewrite_debt.py`): `pr`, `branch`, `previous_head` -- the head

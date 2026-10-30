@@ -377,11 +377,12 @@ either way; a pending capture is retired only by a guarded invalidation, never b
 and a handed-off one is neither replaced nor retired until the transaction its delivery becomes settles, the binding
 holding that delivery to the commit the capture reported on. A transfer's read-back or retry, and a capture's or
 retirement's retry finding the capture past pending, hands its caller the delivery that landed.
-A pending capture is handed on only over readings that admit it, its road's own prerequisites included, retired only
-by a guarded invalidation a reading proved, held to that very reading whole so a comment that moved since -- a missing
-field restored included -- refuses it, and
-held with nothing written where a reading fails or the claim is damaged: an unreadable prerequisite never discards it,
-and a cancelled or restarted cycle never inherits it.
+A pending capture is handed on only over readings that admit it, its road's own prerequisites included, and its
+road's own reading of the recorded pull request -- a `discussion` plan the implementing road reads as one is none of
+the run's, merged or not -- retired only by a guarded invalidation a reading proved, held to that very reading whole
+so a comment that moved since -- a missing field restored included -- refuses it, and held with nothing written where
+a reading fails or the claim is damaged: an unreadable prerequisite never discards it, and a cancelled or restarted
+cycle never inherits it.
 A capture is taken only where it, and then that transfer, its binding, and its settlement, still fit the comment
 with every terminator escaped; the transfer, and the binding and settlement of a captured report, are measured that
 way again over the comment each lands on, and refused for room with the report kept. A refusal leaves the run's
@@ -551,10 +552,12 @@ run meets, or an accounting checkpoint of it that neither landed nor read back, 
 alone, beside a quota retirement it owes: the exit is counted once, as it returns, and nothing else of the run -- a
 publication, a label, a park, a consumed input, a further launch -- is written or made, nor does the count give any
 stage outcome a replay. A captured completion waits through `paused`/`backlog`, a dependency hold, the `ready`
-decision, and a spent run ledger's park, none released, re-baselined, or cleared by it, and its recovery charges no
-run and grants no invocation; one whose run's accounting checkpoint neither landed nor read back is handed on to no
-road until that run's receipt reads back, and the issue's controls are read again right before the capture is retired
-or handed on, so a hold applied while its readings were taken writes nothing. Lifetime agent-run charges and the
+decision, and a spent run ledger's park, none released, re-baselined, or cleared by it -- an interrupted auto
+rebase's anchor beside it included, which the anchor's own hold answers without moving the captured checkout -- and
+its recovery charges no run and grants no invocation; one whose run's accounting checkpoint neither landed nor read
+back is handed on to no road until that run's receipt reads back, and the issue's controls, label, state, and
+requirements are read again right before the capture is retired or handed on, so a hold applied, or a close,
+reopening, or edit landing, while its readings were taken writes nothing. Lifetime agent-run charges and the
 grant that permits further runs are covered by [C-15].
 
 **Specs:** [controls](state-machine/labels-and-state.md#workflow-labels),

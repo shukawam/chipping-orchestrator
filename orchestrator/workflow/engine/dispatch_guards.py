@@ -407,11 +407,15 @@ def _anchor_holds_the_tick(
     holds the branch for an unresolved capture, anchor or not, so the anchor's
     recovery -- which resets the checkout onto the anchor or pushes a replay
     whenever it cannot prove the attempt -- never takes the captured commit
-    off the branch before anything decided on it; and the capture is retired
-    here, since no road may hand a report on over an unfinished rewrite, so
-    the next refresh recovers the anchor and neither waits on the other. A
-    retirement that did not land, a capture nobody can read, or an anchor
-    that reads as no commit stops the tick with the anchor left as it stands.
+    off the branch before anything decided on it; and on its own road the
+    capture is retired here, since no road may hand a report on over an
+    unfinished rewrite, so the next refresh recovers the anchor and neither
+    waits on the other. A capture waiting through a dependency hold, the
+    `ready` decision, or an unlabeled issue is left captured, and the hold
+    below answers the anchor on those labels, none of which the refresh
+    drives, by a clear or a park that moves no checkout. A retirement that
+    did not land, a capture nobody can read, or an anchor that reads as no
+    commit stops the tick with the anchor left as it stands.
     """
     if state.get(_ANCHOR) and capture_holds_the_tick(gh, spec, issue, label, state):
         return True

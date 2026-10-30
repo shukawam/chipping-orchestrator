@@ -26,9 +26,11 @@ UNCERTAIN is a reading nobody could take, or one the issue moved under while
 it was taken -- a comment, an issue, a thread, a checkout, or a pull request
 that would not read, a checkout nothing proves the issue's own, a record
 naming no branch live work may use or claiming a road's record nobody can
-read, labels or controls that moved during the dispatch -- and a run whose
-usage was captured unaccounted with no receipt of it read back since. Nothing
-proves the capture stale, so it is kept and the tick held for a later reading.
+read, labels or controls that moved during the dispatch, and an issue closed,
+reopened, or edited between the reading a decision stood on and its effect --
+and a run whose usage was captured unaccounted with no receipt of it read back
+since. Nothing proves the capture stale, so it is kept and the tick held for a
+later reading.
 
 DAMAGED is a claim nothing here may act on or clear: a capture that will not
 read, a cycle identity nobody can name, or a capture of another record or of
@@ -92,6 +94,8 @@ class Reason(StrEnum):
     RECORD_UNREAD = "the pinned comment could not be read as the one the dispatch read"
     # UNCERTAIN: the issue would not read, or its labels or controls moved during the dispatch.
     ISSUE_UNREAD = "the issue's labels and controls could not be read as the dispatch read them"
+    # UNCERTAIN: the issue was closed, reopened, or edited between a decision's readings and its effect.
+    ISSUE_MOVED = "the issue's state or requirements moved behind the readings it was decided on"
     # UNCERTAIN: the thread the requirements are read off would not read.
     REQUIREMENTS_UNREAD = "the requirements could not be read"
     # UNCERTAIN: the record names no branch live work may use.
@@ -118,16 +122,18 @@ class Reason(StrEnum):
 class AdmittedCompletion:
     """One pending capture its road's owner is handed, with the readings that admitted it.
 
-    `issue` is the issue as it was fetched afresh for its labels, controls,
-    and requirements; `label` the workflow label the dispatch resolved and
-    that fetch read again; `state` the dispatcher's admitted reading, which
-    the capture's read-back proved still the comment's. `pull_request_head` is
-    the head the recorded pull request stood on when it was read -- the commit
-    the run started on or the one it reported on -- or None where the record
-    names no pull request yet. Nothing here is a charge, a grant, or a park:
-    the owner finishes the capture through the road's existing transactions,
-    and every gate those keep -- ownership, size, lease, and exact revision --
-    still applies.
+    `issue` is the issue as its last fetch, right before the handoff, read
+    it -- open, and asking for the requirements the run was handed; `label`
+    the workflow label the dispatch resolved and that fetch read again;
+    `state` the dispatcher's admitted reading, which the capture's read-back
+    proved still the comment's. `pull_request_head` is the head the recorded
+    pull request stood on when it was read -- the commit the run started on
+    or the one it reported on, or on the implementing road the head of a pull
+    request that road reads as the `discussion` stage's plan -- or None where
+    the record names no pull request yet. Nothing here is a charge, a grant,
+    or a park: the owner finishes the capture through the road's existing
+    transactions, and every gate those keep -- ownership, size, lease, and
+    exact revision -- still applies.
     """
 
     gh: GitHubClient

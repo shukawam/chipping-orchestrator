@@ -166,9 +166,10 @@ rebase in that window would hand the report a head it never described, and an An
 nothing recorded (`docs_launched_sha`), which the documenting handler parks before anything that pass left is rebased
 or pushed, and a captured developer completion nothing has resolved, read or not, whose report is about the commit
 its run left until the dispatcher's recovery decides on it, the first unpaused tick included, and beside an
-interrupted attempt's anchor too, where the dispatcher retires it ahead of the anchor's hold before that recovery
-may reset or push anything -- and that holds for the rebase behind an interrupted attempt's recovery too, which has
-the selection asked again once the anchor is down. Each worktree
+interrupted attempt's anchor too, where the dispatcher retires it on its own road ahead of the anchor's hold before
+that recovery may reset or push anything, and leaves it waiting under a dependency hold, where that hold answers the
+anchor without moving the checkout -- and that holds for the rebase behind an interrupted attempt's recovery too,
+which has the selection asked again once the anchor is down. Each worktree
 is synced under its issue's writer claim — the one every dispatch path takes, on the same key — held from before the
 issue is read until its route ends, recovery and settlement included, so an issue another poller on the host is
 dispatching or refreshing is left untouched for the tick and synced on a later one. Under that claim the issue's
@@ -268,8 +269,9 @@ unchanged contribution still carries the verdict over on the transfer permit. Th
 and the parks and in-flight discussion records that outlive them — skip both paths. Beside an interrupted auto rebase's
 anchor, of the records and parks that freeze a branch only the late size-gate claims and a captured developer
 completion nothing has resolved keep the refresh away, so its recovery answers the anchor ahead of any stage handler
-once the dispatcher, ahead of the anchor's hold, has retired such a capture. The failure modes, their durable
-`park_reason` tokens, and the
+once the dispatcher, ahead of the anchor's hold, has retired such a capture on its own road; a capture waiting
+through a dependency hold is left captured, and the dispatcher's hold answers the anchor there. The failure modes,
+their durable `park_reason` tokens, and the
 refresh-owned retry are in
 [`state-machine/labels-and-state.md#base-refresh`](state-machine/labels-and-state.md#base-refresh).
 

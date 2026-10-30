@@ -11,7 +11,9 @@ releases it; an invalidated capture holds nothing. Accounting alone never
 holds a checkout. Beside an auto-rebase anchor an unresolved capture holds the
 branch too, as the late claims do: that anchor's recovery resets or replaces
 the checkout whenever it cannot prove its attempt, so it waits until the
-dispatcher, ahead of the anchor's hold, has retired the capture.
+dispatcher, ahead of the anchor's hold, has retired the capture on its own
+road; under a dependency hold the capture waits, and that hold answers the
+anchor with nothing reset.
 """
 from __future__ import annotations
 
@@ -159,8 +161,8 @@ class CompletionFreezeTest(unittest.TestCase):
         # Beside an anchor the capture holds the branch as well, like the late
         # claims: the anchor's recovery resets or replaces the checkout
         # whenever it cannot prove its attempt, so it waits for the dispatcher,
-        # ahead of the anchor's hold, to retire the capture. A resolved one
-        # holds nothing there either.
+        # ahead of the anchor's hold, to retire the capture on its own road. A
+        # resolved one holds nothing there either.
         for stage, holds in _ANCHORED_HOLDS:
             with self.subTest(stage=stage):
                 anchored = {_FIELD: _spelled(stage), _ANCHOR: _captures.BEFORE}

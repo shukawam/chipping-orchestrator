@@ -116,7 +116,11 @@ def anchor_refusal(state: PinnedState) -> _models.Decision | None:
     capture is retired before the checkout is touched, and never left for the
     anchor and the capture to wait on each other. Only an anchor that reads
     as a commit proves that rewrite: one that does not is evidence nobody can
-    read, and holds the capture.
+    read, and holds the capture. Asked behind the road's own answers, so a
+    capture waiting through a dependency hold, the `ready` decision, or an
+    unlabeled issue is left captured: none of those labels is one the base
+    refresh drives, and the anchor's own hold answers the anchor there by a
+    clear or a park that leaves the checkout where it stands.
     """
     anchor = state.get(_ANCHOR)
     if not anchor:
