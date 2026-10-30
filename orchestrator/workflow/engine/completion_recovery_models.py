@@ -15,9 +15,11 @@ owner acts on the world that was proved rather than on a second look.
 INVALID is a reading that PROVED the capture no longer answers what the
 issue now is: the work ended, the issue was moved to another road, the
 requirements or a record its handoff froze moved, or the branch, the checkout
-head, or the pull request it reported on is another one now. Its output may
-not be published, so it is retired by a guarded invalidation that keeps which
-invocation it was.
+head, or the pull request it reported on is another one now -- or an auto
+rebase of that branch was begun and no recovery has ended it, so the branch is
+mid-rewrite and its recovery may reset or replace the commit reported on. Its
+output may not be published, so it is retired by a guarded invalidation that
+keeps which invocation it was.
 
 UNCERTAIN is a reading nobody could take, or one the issue moved under while
 it was taken -- a comment, an issue, a thread, a checkout, or a pull request
@@ -80,6 +82,8 @@ class Reason(StrEnum):
     # INVALID: the pull request is another branch's, another repository's, or
     # stands on a head neither the run started on nor reported on.
     PULL_REQUEST_MOVED = "the pull request moved off the run's branch and heads"
+    # INVALID: an auto rebase of the branch was begun and no recovery has ended it.
+    ANCHORED = "an unfinished auto rebase of its branch stands beside it"
     # UNCERTAIN: the pinned comment would not read, or moved since the dispatch read it.
     RECORD_UNREAD = "the pinned comment could not be read as the one the dispatch read"
     # UNCERTAIN: the issue would not read, or its labels or controls moved during the dispatch.

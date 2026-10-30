@@ -20,7 +20,11 @@ reads as the one the dispatch read, holds.
 
 The issue is fetched again next, for the labels and controls as they stand:
 a control applied, or a label moved, during the dispatch holds the tick for
-the next one to read. Then the road. Work that has ended -- the issue closed,
+the next one to read. An auto-rebase anchor standing beside the capture is
+asked next: the branch is mid-rewrite, and the anchor's recovery may reset or
+replace the commit the report is about, so the capture is retired before that
+recovery runs (`dispatch_guards._anchor_holds_the_tick` asks this ahead of
+the anchor's hold). Then the road. Work that has ended -- the issue closed,
 or labelled `done` or `rejected` -- and an issue moved onto any other road
 than the one the capture reported on are past its output, and so is a
 handoff one of whose frozen records another road has moved since
@@ -46,9 +50,9 @@ from types import MappingProxyType
 from github.Issue import Issue
 
 from orchestrator.config import models as _config_models
+from orchestrator.git.base_sync import state as _base_sync_state
+from orchestrator.github import issues as _issues, labels as _labels
 from orchestrator.github.client import GitHubClient
-from orchestrator.github.issues import issue_is_closed
-from orchestrator.github.labels import hard_skip_control_label
 from orchestrator.github.pinned_state import PinnedState
 from orchestrator.workflow.engine import (
     completion_checkpoint as _checkpoint,
@@ -66,6 +70,9 @@ log = logging.getLogger("orchestrator.workflow")
 
 _Standing = _models.Standing
 _Reason = _models.Reason
+
+# The anchor an auto rebase pins before git runs, spelled by the base sync.
+_ANCHOR = _base_sync_state._PENDING_PUSH_SHA
 
 # The labels whose whole meaning is that this issue's work is over.
 _TERMINAL_LABELS = frozenset((WorkflowLabel.DONE, WorkflowLabel.REJECTED))
@@ -110,7 +117,8 @@ def decided(
     if isinstance(fresh, _models.Decision):
         return fresh
     refused = (
-        _road_refusal(fresh, label, state, capture)
+        _anchor_refusal(state)
+        or _road_refusal(fresh, label, state, capture)
         or _requirements_refusal(gh, fresh, state, capture)
         or _sources.checkout_refusal(spec, issue.number, state, capture)
     )
@@ -145,16 +153,31 @@ def _live_issue(gh: GitHubClient, issue: Issue, label: WorkflowLabel | None) -> 
     except Exception:  # noqa: BLE001 - an issue nobody could fetch holds the capture, never invalidates it
         log.warning("issue=#%d could not be fetched again to admit its captured completion", issue.number)
         return _ISSUE_UNREAD
-    if hard_skip_control_label(fresh) is not None or gh.workflow_label(fresh) != label:
+    if _labels.hard_skip_control_label(fresh) is not None or gh.workflow_label(fresh) != label:
         return _ISSUE_UNREAD
     return fresh
+
+
+def _anchor_refusal(state: PinnedState) -> _models.Decision | None:
+    """Why an auto rebase begun over the capture's branch, and not yet recovered, refuses it; or None.
+
+    The anchor's recovery resets the checkout onto the anchor or pushes the
+    replay whenever it cannot prove the attempt, so the commit the report is
+    about is no longer the branch's to hand on: no road publishes over a
+    rewrite no recovery has finished. Decided ahead of that recovery, so the
+    capture is retired before the checkout is touched, and never left for the
+    anchor and the capture to wait on each other.
+    """
+    if state.get(_ANCHOR):
+        return _models.Decision(_Standing.INVALID, _Reason.ANCHORED)
+    return None
 
 
 def _road_refusal(
     fresh: Issue, label: WorkflowLabel | None, state: PinnedState, capture: _records.CompletionCapture,
 ) -> _models.Decision | None:
     """Why the road `capture` reported on is not the one the issue is on, or None."""
-    if issue_is_closed(fresh) or label in _TERMINAL_LABELS:
+    if _issues.issue_is_closed(fresh) or label in _TERMINAL_LABELS:
         return _models.Decision(_Standing.INVALID, _Reason.ENDED)
     if label is None or label in _WAITING_LABELS:
         return _models.Decision(_Standing.WAITING, _Reason.WAITING)

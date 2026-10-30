@@ -1004,7 +1004,12 @@ than a second source of truth: where the two disagree, the handler pages are aut
                                    unlabeled issue run as they would, the
                                    capture kept. Nothing is charged, parked,
                                    or granted. The in-tick handoff ready makes
-                                   into workflow:implementing asks it too
+                                   into workflow:implementing asks it too.
+                                   Beside an auto-rebase anchor it is asked
+                                   AHEAD of the anchor's hold and RETIRED,
+                                   the refresh having held the branch for it,
+                                   so the anchor's recovery resets or pushes
+                                   nothing the capture is about first
      no workflow label, a      ─► nothing, logged once a tick. Pickup GREETS
        pinned comment already      an issue and mints its pinned comment, so a
        on the issue, and no        second greeting writes a second one every

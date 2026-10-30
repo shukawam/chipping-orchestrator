@@ -747,9 +747,10 @@ has left. The completion that hands the pass on to `in_review` drops it in the w
 does that completion's own run of its final head, while `docs_final_provenance` names as its evidence the transaction
 `verification_evidence_pending` still holds: rebased first, the run tests a head the pull request has left and never
 settles, and the settlement that makes it current, or the abandonment of it, ends the hold. So does a captured
-developer completion nothing has resolved — `developer_completion` on the comment and not spelled whole as a
-`handed_off` or `retired` capture, so a pending one and every shape nobody can read, `null` included, hold
-(`frozen._completion_unresolved`). Its report is about the commit the checkout stood on when the run returned, and
+developer completion nothing has resolved — `developer_completion` on the comment and not read by the capture's own
+reader (`completion_state.read`) as a `handed_off` or `retired` capture, so a pending one and every shape nobody can
+read hold, `null` and a resolved stage with a member out of its bound included (`frozen._completion_unresolved`).
+Its report is about the commit the checkout stood on when the run returned, and
 the dispatcher's
 [captured-completion recovery](delivery-stages.md#the-captured-completion-recovery-every-dispatch) hands it on
 only while the checkout still stands there; this refresh runs ahead of that recovery on every tick, the first one an
@@ -783,13 +784,18 @@ fails the test and keeps the freeze. The reading group is never set aside: a gen
 answer is a question no push settles.
 
 Beside a pinned anchor the rest of those freezes are set aside as well, and only the late claims — the reading
-group, and an approval not leased to the anchor — keep the refresh away. The anchor is this refresh's own interrupted
-work, and while it stands the dispatcher holds every stage handler back (`recovery_holds._recovery_holds_dispatch`,
-see [Pinned state](#pinned-state)): a `question_*` / `discussion_*` park, the two discussion records,
-`read_only_baseline_sha`, the `late_collapse_*` group, a developer report recorded and not yet settled, a captured
-developer completion nothing has resolved, `late_measurement_failed`, and `agent_timeout` are each ended by a handler,
-the report reconciliation, or the captured-completion recovery behind that hold, so a freeze on any of them as well
-would leave neither side able to move. None of
+group, and an approval not leased to the anchor — and a captured developer completion nothing has resolved keep the
+refresh away. The anchor is this refresh's own interrupted work, and while it stands the dispatcher holds every stage
+handler back (`recovery_holds._recovery_holds_dispatch`, see [Pinned state](#pinned-state)): a `question_*` /
+`discussion_*` park, the two discussion records, `read_only_baseline_sha`, the `late_collapse_*` group, a developer
+report recorded and not yet settled, `late_measurement_failed`, and `agent_timeout` are each ended by a handler, or
+the report reconciliation, that hold keeps back, so a freeze on any of them as well would leave neither side able to
+move. A capture is answered ahead of that hold instead: the anchor's recovery resets the checkout onto the anchor, or
+pushes a replay, whenever it cannot prove the attempt — an unreadable remote is enough — which would take the commit
+the captured report is about off the branch before anything decided on it, so the dispatcher decides the capture
+first and retires it `invalidated` (no road hands a report on over a rewrite no recovery finished), and the next
+refresh answers the anchor as it always would. A capture nobody can read, or a retirement that did not land, keeps
+both sides where they stand for a human or a later tick. None of
 them is holding a branch still against a rebase any more — the anchor says one already ran — so the recovery reaches
 the checkout, pushes the replay its record names or puts the branch back on the anchor and asks a human, and leaves
 each record for its owner. A recovery that takes the anchor down and lets the tick go on — the landed clear of an
@@ -798,8 +804,7 @@ asked
 again, over the comment as the recovery left it, before the rebase behind it (`workflow/engine/base_rewrite.py`).
 That rebase is a new rewrite with no anchor beside it, so every one of those freezes holds it as it holds an
 unanchored branch: a developer report recorded and not yet settled holds it until the report reconciliation settles
-the report on the head it is about, a captured completion holds it until the recovery behind the hold decides on the
-checkout that recovery left, and a reply the recovery did not spend is left unspent for the rebase that
+the report on the head it is about, and a reply the recovery did not spend is left unspent for the rebase that
 follows. The `question` and `discussion` labels themselves are still skipped, and an anchor under
 either is answered by the dispatcher on the recovery's ineligible road. The one late claim beside an anchor that no
 reconciliation ends is a generation measured past its ceiling over the anchor's own replay, which the refresh stays
@@ -2010,8 +2015,10 @@ The keys that matter for the state machine fall into a few groups:
   read-back alone and never from a log, analytics, a native session, a trajectory, or a host record: applicable, it
   is handed, admitted, to the owner of its road, which no road has in this build, so the stage is held; stale, it is
   retired `invalidated` by a guarded commit owning the capture alone, its invocation kept; uncertain or damaged, the
-  stage is held with nothing written. Until it is resolved it keeps the issue's checkout out of the base refresh
-  ([Base refresh](#base-refresh)), and none of it charges a run, clears a park, or grants an invocation.
+  stage is held with nothing written. Beside an auto-rebase anchor it is decided ahead of the anchor's hold and
+  retired, since no road hands a report on over a rewrite no recovery finished. Until it is resolved it keeps the
+  issue's checkout out of the base refresh, beside an anchor too ([Base refresh](#base-refresh)), and none of it
+  charges a run, clears a park, or grants an invocation.
 - **Rewritten-head report debt.** `developer_report_rewrite_debt` is the report a pull request is owed because this
   orchestrator rewrote its head (`workflow/engine/report_rewrite_debt.py`): `pr`, `branch`, `previous_head` -- the head
   the rewrite replaced, the first one across a retargeting, which is the head the settled report is about -- and

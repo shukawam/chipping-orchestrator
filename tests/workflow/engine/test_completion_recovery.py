@@ -67,6 +67,9 @@ _UNREAD = MappingProxyType({
     "thread": Case(Turn(unanswered="comments_after"), _Reason.REQUIREMENTS_UNREAD),
     "branch refused": Case(Turn(edits=MappingProxyType({"branch": "orchestrator/issue-2427"})), _Reason.BRANCH_REFUSED),
     "pull request": Case(Turn(unanswered="get_pr"), _Reason.PULL_REQUEST_UNREAD, pull_request=True),
+    "pull request head": Case(
+        Turn(pull_request=MappingProxyType({"sha": None})), _Reason.PULL_REQUEST_UNREAD, pull_request=True,
+    ),
     "checkout unreadable": Case(Turn(identity=ProbeAnswer.UNREADABLE), _Reason.CHECKOUT_UNPROVEN),
     "checkout not its own": Case(Turn(identity=ProbeAnswer.REFUTED), _Reason.CHECKOUT_UNPROVEN),
     "head unread": Case(Turn(head=""), _Reason.CHECKOUT_UNPROVEN),

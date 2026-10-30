@@ -165,9 +165,10 @@ the thing it describes stands -- a developer report recorded or bound and not ye
 rebase in that window would hand the report a head it never described, and an Antigravity docs launch whose outcome
 nothing recorded (`docs_launched_sha`), which the documenting handler parks before anything that pass left is rebased
 or pushed, and a captured developer completion nothing has resolved, read or not, whose report is about the commit
-its run left until the dispatcher's recovery decides on it, the first unpaused tick included -- and that holds for
-the rebase behind an interrupted attempt's recovery too, which has the selection asked again once the anchor is
-down. Each worktree
+its run left until the dispatcher's recovery decides on it, the first unpaused tick included, and beside an
+interrupted attempt's anchor too, where the dispatcher retires it ahead of the anchor's hold before that recovery
+may reset or push anything -- and that holds for the rebase behind an interrupted attempt's recovery too, which has
+the selection asked again once the anchor is down. Each worktree
 is synced under its issue's writer claim — the one every dispatch path takes, on the same key — held from before the
 issue is read until its route ends, recovery and settlement included, so an issue another poller on the host is
 dispatching or refreshing is left untouched for the tick and synced on a later one. Under that claim the issue's
@@ -311,8 +312,9 @@ Beside them sits `developer_completion`, the bounded capture of one finished dev
 delivery by one guarded commit; no stage captures one yet. A pending one is decided by the dispatcher ahead of every
 handler, behind the reconciliations
 ([the captured-completion recovery](state-machine/delivery-stages.md#the-captured-completion-recovery-every-dispatch)):
-handed, admitted, to its road's owner, retired as invalidated where a reading proves it stale, or held where nothing
-can decide it, and it keeps its checkout out of the base refresh until then.
+handed, admitted, to its road's owner, retired as invalidated where a reading proves it stale or an auto-rebase
+anchor stands beside it, or held where nothing can decide it, and it keeps its checkout out of the base refresh until
+then.
 Beside it sits the additive `verification_evidence_*` group -- the pending evidence transaction, the evidence the
 pull request carries now, a bounded history of retired evidence, the receipt of the last one settled, and the highest
 revision spent -- which the dispatcher reconciles directly behind the report, publishing an artifact only once the

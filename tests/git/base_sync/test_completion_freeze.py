@@ -58,6 +58,9 @@ _ACCOUNTED = MappingProxyType({
 
 _ANCHOR = "pending_auto_base_rebase_push_sha"
 
+# Whether a capture at each stage holds the branch beside an anchor.
+_ANCHORED_HOLDS = ((_records.CaptureStage.PENDING, True), (_records.CaptureStage.RETIRED, False))
+
 
 def _spelled(stage: _records.CaptureStage) -> dict:
     """A capture at `stage`, spelled whole as its checkpoint writes one."""
@@ -81,9 +84,15 @@ def _without(spelled: dict, member: str) -> dict:
 
 
 def _unresolved() -> MappingProxyType:
-    """A pending capture, and every shape of one nobody can read: none of them is a release."""
+    """A pending capture, and every shape of one nobody can read, a resolved one included: none of them is a release.
+
+    A resolved stage with every member it spells, but one of them out of its
+    bound, is no resolved capture to the capture's own reader, so it is none
+    to the refresh either.
+    """
     pending = _spelled(_records.CaptureStage.PENDING)
     handed_off = _spelled(_records.CaptureStage.HANDED_OFF)
+    retired = _spelled(_records.CaptureStage.RETIRED)
     return MappingProxyType({
         "pending": pending,
         "null": None,
@@ -93,6 +102,10 @@ def _unresolved() -> MappingProxyType:
         "a pending capture called handed off": {**pending, "stage": "handed_off"},
         "a handoff missing a member": _without(handed_off, "receipt"),
         "a handoff with a member too many": {**handed_off, "report": "the report"},
+        "a retirement for no reason this build writes": {**retired, "reason": "not-a-retirement-reason"},
+        "a retirement with an unreadable nonce": {**retired, "nonce": "not-a-nonce"},
+        "a handoff about no commit": {**handed_off, "source": "not-a-commit"},
+        "a handoff of no recorded revision": {**handed_off, "revision": 0},
     })
 
 
@@ -141,16 +154,16 @@ class CompletionFreezeTest(unittest.TestCase):
                 self.assertFalse(_synced(label, **handed_off, **owner))
         self.assertTrue(_synced(label, **handed_off, **_SETTLED))
 
-    def test_an_anchor_recovers_ahead_of_it(self) -> None:
-        # Beside an anchor the capture is set aside, as a report in flight is:
-        # the dispatcher holds the handlers behind the anchor, so a capture that
-        # froze its recovery out too would leave neither to move. The selection
-        # asked again once that recovery takes the anchor down holds the branch.
-        captured = {_FIELD: _spelled(_records.CaptureStage.PENDING)}
-        anchored = PinnedState(state_data={**captured, _ANCHOR: _captures.BEFORE})
-
-        self.assertFalse(_selection._state_holds_the_branch(_NUMBER, anchored))
-        self.assertTrue(_selection._state_holds_the_branch(_NUMBER, PinnedState(state_data=captured)))
+    def test_an_anchor_waits_behind_it(self) -> None:
+        # Beside an anchor the capture holds the branch as well, like the late
+        # claims: the anchor's recovery resets or replaces the checkout
+        # whenever it cannot prove its attempt, so it waits for the dispatcher,
+        # ahead of the anchor's hold, to retire the capture. A resolved one
+        # holds nothing there either.
+        for stage, holds in _ANCHORED_HOLDS:
+            with self.subTest(stage=stage):
+                anchored = {_FIELD: _spelled(stage), _ANCHOR: _captures.BEFORE}
+                self.assertEqual(_selection._state_holds_the_branch(_NUMBER, PinnedState(state_data=anchored)), holds)
 
 
 if __name__ == "__main__":

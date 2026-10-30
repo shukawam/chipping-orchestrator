@@ -436,8 +436,8 @@ before the step leaves the intent, approval, anchor, or marker a crash there wou
 the push, the intent or receipt recording it, and any handoff it owes, and withholds only what follows. Current
 unpushed work, a current pull request's restoration from its remote head, uncertain remote reads, and exact-head
 pushes keep their protocols. A captured completion publishes nothing of its own: its recovery hands an admitted
-capture to its road's owner, whose publication keeps every gate above, and the base refresh rewrites no captured
-source before that recovery has decided on it.
+capture to its road's owner, whose publication keeps every gate above, and the base refresh -- an interrupted
+rebase's recovery included -- rewrites no captured source before that recovery has decided on it.
 Credential filtering does not enforce push authority; see [C-11].
 
 **Specs:** [pushes](architecture.md#push-path-gitbranch_transport_push_branch),
@@ -466,7 +466,8 @@ Credential filtering does not enforce push authority; see [C-11].
 [switched refresh abort](../tests/workflow/engine/test_base_refresh_abort.py),
 [switched refresh clean](../tests/git/base_sync/test_checkout_proof.py),
 [switched conflict handoff](../tests/workflow/stages/conflicts/test_handoff_checkout.py),
-[captured source](../tests/workflow/engine/test_tick_refresh.py).
+[captured source](../tests/workflow/engine/test_tick_refresh.py),
+[anchored capture](../tests/workflow/engine/test_anchored_capture.py).
 
 ## C-08: Agent reply protocols
 

@@ -254,8 +254,9 @@ versus installed layout that picks the `.env`, which a setup asks before any con
 nothing beyond each other.
 Over every scope, the only other reaches
 left are declared one by one in `tests/repository/test_layering.py`: three base-sync owners posting a notice or a park
-through the workflow's comment and guard owners, and the attempt's checkpoint owner landing a park's record through
-the workflow's guarded commit, deferred to a call because at module scope they would be a cycle. An
+through the workflow's comment and guard owners, the attempt's checkpoint owner landing a park's record through
+the workflow's guarded commit, and the refresh's freeze reading a captured completion through that capture's own
+reader, deferred to a call because at module scope they would be a cycle. An
 undeclared hop fails wherever it is written, and a declared one fails if it is bound at module scope after all. The
 launch forms compose each other and are reached from nothing below them at any scope but those two install facts,
 and no import anywhere is relative, because a relative target names its module by position and no layer can be read
@@ -638,7 +639,8 @@ parks once on a record it may not act on
 read-back alone: handed, admitted and immutable, to the owner of the road it was taken on -- which no road has in this
 build, so the handler is held -- retired as invalidated where a reading proves it stale, held with nothing written
 where a reading fails or the claim is damaged, and waited through on a dependency hold, the `ready` decision, and an
-unlabeled issue; the base refresh keeps its checkout where the run left it until then
+unlabeled issue; the base refresh keeps its checkout where the run left it until then, beside an auto-rebase anchor
+too, where the capture is decided ahead of the anchor's hold and retired before that recovery may reset or push
 ([`state-machine/delivery-stages.md`](state-machine/delivery-stages.md#the-captured-completion-recovery-every-dispatch))
 — an ordinary split's child whose pinned seed is not the one the receipt in its body owes it, held under every label
 but a terminal, pickup included, directly behind the agent-run-limit hold and ahead of a live adjudication's step

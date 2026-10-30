@@ -33,7 +33,6 @@ answered by the reason the park carries.
 from __future__ import annotations
 
 from pathlib import Path
-from types import MappingProxyType
 
 from orchestrator.git.base_sync.state import _PENDING_PUSH_SHA, log
 from orchestrator.git.verification import probes as _probes
@@ -227,27 +226,19 @@ _RECEIPT = "receipt"
 # delivery rewrites the capture as handed off in the very commit that records
 # the delivery, which holds the branch until its binding and settlement have
 # run. A capture a guarded invalidation retired holds nothing either. So a
-# capture holds unless it reads as one of those two resolved stages, spelled
-# whole -- `null`, a stage nobody writes, a key too many or too few: a capture
-# nobody can read is one whose recovery may still need the commit, and its
-# damage is no release. The usage receipts beside it are accounting alone and
-# hold nothing.
+# capture holds unless its own reader reads it as one of those two resolved
+# stages: `null`, a stage nobody writes, a key too many or too few, and a
+# member out of its bound are each a capture nobody can read, whose recovery
+# may still need the commit, and its damage is no release. The usage
+# receipts beside it are accounting alone and hold nothing.
 #
-# The members are spelled here the way every pinned key this package reads
-# is: what this pins down is how the refresh reads a record a stage it never
-# calls into writes.
+# The field is spelled here the way every pinned key this package reads is,
+# but the capture is read by the workflow's own reader rather than spelled a
+# second time: a second spelling is how this refresh would come to release a
+# capture every other reader in the tree refuses.
 _COMPLETION = "developer_completion"
 
-_COMPLETION_STAGE = "stage"
-
-_INVOCATION_MEMBERS = ("repo", "issue", "comment", "cycle", "ordinal", "nonce")
-
-_RESOLVED_COMPLETIONS = MappingProxyType({
-    "handed_off": frozenset((
-        _COMPLETION_STAGE, *_INVOCATION_MEMBERS, "receipt", "revision", "branch", "source",
-    )),
-    "retired": frozenset((_COMPLETION_STAGE, *_INVOCATION_MEMBERS, "reason")),
-})
+_PENDING = "pending"
 
 
 # The terms a squash-on-approval records before it destroys the evidence of
@@ -419,18 +410,20 @@ def _held_records(state: _pinned_state.PinnedState) -> tuple[str, ...]:
 
 
 def _completion_unresolved(state: _pinned_state.PinnedState) -> tuple[str, ...]:
-    """The captured completion, where the comment carries one that is not spelled as resolved; else nothing.
+    """The captured completion, where the comment carries one its own reader does not read as resolved; else nothing.
 
     Read for the key being there at all, as the capture's own state reader
     tells a claim from an absence, and released only by a handed-off or
-    retired capture carrying exactly the members that stage spells.
+    retired capture that reader takes whole.
     """
     if _COMPLETION not in state.state_data:
         return ()
-    captured = state.state_data[_COMPLETION]
-    stage = captured.get(_COMPLETION_STAGE) if isinstance(captured, dict) else None
-    spelled = _RESOLVED_COMPLETIONS.get(stage) if isinstance(stage, str) else None
-    return () if spelled is not None and frozenset(captured) == spelled else (_COMPLETION,)
+    # Lazy for the reason every upward reach in this package is: what a
+    # capture is, read whole, is the workflow's, and the workflow imports this
+    # package back.
+    from orchestrator.workflow.engine import completion_state as _completion_state
+    captured = _completion_state.read(state)
+    return () if captured is not None and captured.stage != _PENDING else (_COMPLETION,)
 
 
 def _docs_verification_owed(state: _pinned_state.PinnedState) -> tuple[str, ...]:

@@ -401,7 +401,20 @@ def _anchor_holds_the_tick(
     road left; one it leaves standing is somebody else's question, and the
     adjudication's road holds behind it (`rewrite_takeover_parks`) rather than
     run a verdict over it on this tick or any later one.
+
+    A captured developer completion beside the anchor is decided before any
+    of it (`completion_recovery.capture_holds_the_tick`). The base refresh
+    holds the branch for an unresolved capture, anchor or not, so the anchor's
+    recovery -- which resets the checkout onto the anchor or pushes a replay
+    whenever it cannot prove the attempt -- never takes the captured commit
+    off the branch before anything decided on it; and the capture is retired
+    here, since no road may hand a report on over an unfinished rewrite, so
+    the next refresh recovers the anchor and neither waits on the other. A
+    retirement that did not land, or a capture nobody can read, stops the
+    tick with the anchor left as it stands.
     """
+    if state.get(_ANCHOR) and capture_holds_the_tick(gh, spec, issue, label, state):
+        return True
     late_relabel = importlib.import_module(_stage_targets._LATE_RELABEL_OWNER)
     beside_an_adjudication = (
         bool(state.get(_ANCHOR))

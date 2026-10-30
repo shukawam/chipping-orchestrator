@@ -24,7 +24,9 @@ branch in this repository, and standing on the head the run started on or
 the one it reported on: the first is a source still owed its push, the second
 one already published. Any other head is somebody else's push, and a pull
 request merged or closed ended the work the report was for. One nobody could
-read holds the capture.
+read holds the capture, and so does one read without its head's branch,
+commit, or repository: a mismatch is proved only against a reading that has
+all three.
 """
 from __future__ import annotations
 
@@ -113,15 +115,28 @@ def _own_head(spec: _config_models.RepoSpec, issue_number: int, capture: _record
 
 
 def _pull_request_reading(gh: GitHubClient, recorded: object) -> _PullRequestReading | None:
-    """One read of the pull request `recorded` names, or None where it names none this build reads or would not read."""
+    """One whole read of the pull request `recorded` names, or None where it names none, or none was read whole.
+
+    Every member is read inside the one request a failure answers for -- the
+    lazy reads behind the pull request included -- and a reading missing its
+    head's branch, commit, or repository is no reading: what it cannot say is
+    exactly what would tell a pull request that moved from one that did not.
+    """
     number = _record_values.as_recorded_number(recorded)
     if number is None:
         return None
     try:
-        pull_request = gh.get_pr(number)
+        reading = _read_whole(gh, number)
     except Exception:  # noqa: BLE001 - a pull request nobody could read holds the capture, never invalidates it
         log.warning("PR #%d could not be read to admit a captured completion over it", number)
         return None
+    whole = reading.branch and reading.head and reading.repository
+    return reading if whole else None
+
+
+def _read_whole(gh: GitHubClient, number: int) -> _PullRequestReading:
+    """The pull request `number`, its state, and its head's branch, commit, and repository, as read now."""
+    pull_request = gh.get_pr(number)
     head = getattr(pull_request, "head", None)
     return _PullRequestReading(
         state=gh.pr_state(pull_request),

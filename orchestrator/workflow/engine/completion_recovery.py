@@ -12,6 +12,10 @@ behind the guards that end, park, or reconcile the issue and ahead of the
 handler (`dispatch_guards._record_stops_the_tick`, and on the adjudication's
 own road), and the in-tick handoff into `implementing` a `ready` decision or
 a single verdict makes asks the same question before that handler runs.
+Beside a standing auto-rebase anchor it is asked first of all, ahead of the
+anchor's hold (`dispatch_guards._anchor_holds_the_tick`): the refresh holds
+the branch for the capture there too, and the capture is retired before the
+anchor's recovery may reset or push the commit it reported on.
 
 What is owed is one reading's answer (`completion_admission`). An APPLICABLE
 capture is handed, admitted and immutable, to the owner of the road it was
