@@ -115,6 +115,8 @@ def _adopted_or_created(
             "and never recorded",
             context.issue.number, orphan.number, index,
         )
+        # The create that would have linked it died before recording it.
+        context.gh.link_child_issue(context.issue.number, orphan)
         return orphan
     if _late_owner._latch_stops(context) is not None:
         log.warning(

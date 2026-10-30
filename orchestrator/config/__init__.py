@@ -62,6 +62,7 @@ __all__ = [
     "AGY_BIN",
     "ALLOWED_ISSUE_AUTHORS",
     "BASE_BRANCH",
+    "CHILD_AS_SUB_ISSUE",
     "CLAUDE_BIN",
     "CLOSED_ISSUE_SWEEP_EVERY_N_TICKS",
     "CODEX_BIN",
@@ -469,6 +470,13 @@ OPEN_PR_AS_DRAFT: bool = _RESOLVED["OPEN_PR_AS_DRAFT"]
 # it; off leaves pull requests this orchestrator did not open alone, for a
 # repository whose other contributors are colleagues rather than strangers.
 COMMUNITY_PR_SWEEP: bool = _RESOLVED["COMMUNITY_PR_SWEEP"]
+
+# Register each child a split creates (or a recovery adopts) as a GitHub
+# sub-issue of its parent, and give it the parent's assignees -- or, with none,
+# whoever applied `PICKUP_LABEL` to the parent. Off (the default) leaves the
+# `Parent: #N` line in the body as the only link, as before. Linking is
+# bookkeeping on an issue that already exists, so it never fails the split.
+CHILD_AS_SUB_ISSUE: bool = _RESOLVED["CHILD_AS_SUB_ISSUE"]
 
 # The size ceiling one implementation candidate may publish under, counted in
 # textual lines the prospective pull-request diff ADDS -- the frozen remote

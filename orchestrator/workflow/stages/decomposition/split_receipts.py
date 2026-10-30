@@ -200,6 +200,8 @@ def adopt_unrecorded(
     state.set(_state._CHILDREN, [*recorded, orphan.number])
     _replacement_lineage.read_replacement_lineage(state, issue, spec).protect(state, orphan.number)
     gh.write_pinned_state(issue, state)
+    # The create that would have linked it died before recording it.
+    gh.link_child_issue(issue.number, orphan)
     return Adoption(state.get(_state._CHILDREN))
 
 

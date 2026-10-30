@@ -18,6 +18,7 @@ class _FakeIssueHistory:
     _posted_comments: _CommentHistory = field(default_factory=list)
     _label_history: _LabelHistory = field(default_factory=list)
     _created_child_issues: list[FakeIssue] = field(default_factory=list)
+    _linked_children: list[tuple[int, int]] = field(default_factory=list)
     _write_state_calls: int = 0
 
 

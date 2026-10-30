@@ -10,7 +10,7 @@ from tests.config import config_reload_helpers as _reload
 _TRUTHY_SPELLINGS = ("on", "ON", " on ", "1", "true", "True", "yes")
 # Default-off boolean switches: the fork's opt-in behaviors, each off unless
 # an operator names it, and parsed by the same strict truthy set.
-_DEFAULT_OFF_SWITCHES = ("OPEN_PR_AS_DRAFT",)
+_DEFAULT_OFF_SWITCHES = ("OPEN_PR_AS_DRAFT", "CHILD_AS_SUB_ISSUE")
 
 
 class PickupLabelConfigTest(unittest.TestCase):

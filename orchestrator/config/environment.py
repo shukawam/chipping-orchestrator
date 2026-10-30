@@ -383,6 +383,9 @@ class _SettingsResolver:
             "COMMUNITY_PR_SWEEP": env.get(
                 "COMMUNITY_PR_SWEEP", _DEFAULT_ENABLED,
             ).strip().lower() in _TRUE_VALUES,
+            "CHILD_AS_SUB_ISSUE": env.get(
+                "CHILD_AS_SUB_ISSUE", "off",
+            ).strip().lower() in _TRUE_VALUES,
             "SQUASH_ON_APPROVAL": env.get(
                 "SQUASH_ON_APPROVAL", _DEFAULT_ENABLED,
             ).strip().lower() in _TRUE_VALUES,

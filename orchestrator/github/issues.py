@@ -22,7 +22,7 @@ from github.IssueComment import IssueComment
 from github.Label import Label
 
 from orchestrator import config
-from orchestrator.github import events, labels
+from orchestrator.github import events, labels, sub_issues
 from orchestrator.github.comments import carries_own_marker
 from orchestrator.observability.analytics.recording import events as _recording_events
 from orchestrator.workflow import (
@@ -275,7 +275,7 @@ def _workflow_label_applied(issue_event: Any, bot_login: str) -> str | None:
     return _label_reading.label_for_name(named) if named else None
 
 
-class GitHubIssueMixin:
+class GitHubIssueMixin(sub_issues.GitHubSubIssueMixin):
     """Issue-facing methods shared by the concrete GitHub client."""
 
     workflow_label = labels.WORKFLOW_LABEL_METHOD
@@ -390,11 +390,13 @@ class GitHubIssueMixin:
         ]
         parent_body = (body or "").rstrip()
         full_body = f"{parent_body}\n\nParent: #{parent_number}"
-        return self.repo.create_issue(
+        child = self.repo.create_issue(
             title=title,
             body=full_body,
             labels=validated_labels,
         )
+        self.link_child_issue(parent_number, child)
+        return child
 
     def find_issue_carrying(self, marker: str) -> Issue | None:
         """Return the issue this orchestrator created carrying `marker`.

@@ -515,6 +515,9 @@ examples.
 - `COMMUNITY_PR_SWEEP` — default `on`. the per-tick sweep that labels open PRs from authors outside
   `ALLOWED_ISSUE_AUTHORS` with `workflow:community_contribution` and @-mentions `HITL_HANDLE` once per PR; `off` leaves
   pull requests the orchestrator did not open alone
+- `CHILD_AS_SUB_ISSUE` — default `off`. register each child a split creates, or a crash recovery adopts, as a GitHub
+  sub-issue of its parent, and give an unassigned child the parent's assignees — or, when the parent has none, the login
+  that last applied `PICKUP_LABEL` to it. Both writes are logged and skipped on failure; they never fail the split
 - `DECOMPOSE` — default `on`. enable the `decomposing` stage; `off` reverts to the legacy
   "no label → `workflow:implementing`" pickup, and sends an issue already sitting on `workflow:decomposing` the same
   way through that stage's own handler (once any half-finished split above it is settled) rather than spawning

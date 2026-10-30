@@ -88,6 +88,11 @@ class _IssueHistoryView:
         return self._issue_history._created_child_issues
 
     @property
+    def linked_children(self) -> list[tuple[int, int]]:
+        """(parent, child) pairs `link_child_issue` registered, in call order."""
+        return self._issue_history._linked_children
+
+    @property
     def write_state_calls(self) -> int:
         return self._issue_history._write_state_calls
 
@@ -148,6 +153,11 @@ class _IssueService:
         self._issues[child.number] = child
         self.created_child_issues.append(child)
         return child
+
+    def link_child_issue(self, parent_number: int, child: FakeIssue) -> None:
+        """Record a sub-issue link, honoring `CHILD_AS_SUB_ISSUE` as the real one does."""
+        if config.CHILD_AS_SUB_ISSUE:
+            self._issue_history._linked_children.append((parent_number, child.number))
 
     def find_issue_carrying(self, marker: str) -> FakeIssue | None:
         """The issue this client created carrying `marker`, in any state.
