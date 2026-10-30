@@ -99,9 +99,11 @@ def _sweep_community_contribution_prs(
     Bot-authored PRs (Dependabot, Renovate, CI bots) are skipped by GitHub's
     `user.type == "Bot"` flag -- they open PRs structurally and are not
     community contributions, so they never earn the label or ping.
+
+    `COMMUNITY_PR_SWEEP=off` turns the whole sweep off.
     """
     allowed = config.ALLOWED_ISSUE_AUTHORS
-    if not allowed:
+    if not allowed or not config.COMMUNITY_PR_SWEEP:
         return
     allowed_lower = {github_handle.lower() for github_handle in allowed}
     try:

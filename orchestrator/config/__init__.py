@@ -65,6 +65,7 @@ __all__ = [
     "CLAUDE_BIN",
     "CLOSED_ISSUE_SWEEP_EVERY_N_TICKS",
     "CODEX_BIN",
+    "COMMUNITY_PR_SWEEP",
     "DECOMPOSE",
     "DECOMPOSE_AGENT",
     "DECOMPOSE_AGENT_ARGS",
@@ -462,6 +463,12 @@ PICKUP_LABEL: str = _RESOLVED["PICKUP_LABEL"]
 # default) opens ready-for-review pull requests, as before. Nothing here ever
 # marks a draft ready: that stays a human's call, like the merge itself.
 OPEN_PR_AS_DRAFT: bool = _RESOLVED["OPEN_PR_AS_DRAFT"]
+
+# The per-tick sweep that labels open pull requests from authors outside
+# `ALLOWED_ISSUE_AUTHORS` and pings HITL once per PR. On (the default) keeps
+# it; off leaves pull requests this orchestrator did not open alone, for a
+# repository whose other contributors are colleagues rather than strangers.
+COMMUNITY_PR_SWEEP: bool = _RESOLVED["COMMUNITY_PR_SWEEP"]
 
 # The size ceiling one implementation candidate may publish under, counted in
 # textual lines the prospective pull-request diff ADDS -- the frozen remote

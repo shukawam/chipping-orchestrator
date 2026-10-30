@@ -38,3 +38,13 @@ class DefaultOffSwitchConfigTest(unittest.TestCase):
             with self.subTest(switch=switch, value=spelling):
                 config = _reload.load_config({switch: spelling})
                 self.assertTrue(getattr(config, switch))
+
+
+class DefaultOnSwitchConfigTest(unittest.TestCase):
+    """COMMUNITY_PR_SWEEP keeps the upstream sweep unless explicitly turned off."""
+
+    def test_community_pr_sweep_default_is_on(self) -> None:
+        self.assertTrue(_reload.load_config().COMMUNITY_PR_SWEEP)
+
+    def test_community_pr_sweep_off_disables(self) -> None:
+        self.assertFalse(_reload.load_config({"COMMUNITY_PR_SWEEP": "off"}).COMMUNITY_PR_SWEEP)

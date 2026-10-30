@@ -380,6 +380,9 @@ class _SettingsResolver:
             "OPEN_PR_AS_DRAFT": env.get(
                 "OPEN_PR_AS_DRAFT", "off",
             ).strip().lower() in _TRUE_VALUES,
+            "COMMUNITY_PR_SWEEP": env.get(
+                "COMMUNITY_PR_SWEEP", _DEFAULT_ENABLED,
+            ).strip().lower() in _TRUE_VALUES,
             "SQUASH_ON_APPROVAL": env.get(
                 "SQUASH_ON_APPROVAL", _DEFAULT_ENABLED,
             ).strip().lower() in _TRUE_VALUES,

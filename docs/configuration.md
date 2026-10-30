@@ -512,6 +512,9 @@ examples.
   issue in flight does not stop it
 - `OPEN_PR_AS_DRAFT` — default `off`. open every pull request the orchestrator creates (implementation and
   discussion plan PRs) as a draft. The orchestrator never marks a draft ready for review; a human does, before merging
+- `COMMUNITY_PR_SWEEP` — default `on`. the per-tick sweep that labels open PRs from authors outside
+  `ALLOWED_ISSUE_AUTHORS` with `workflow:community_contribution` and @-mentions `HITL_HANDLE` once per PR; `off` leaves
+  pull requests the orchestrator did not open alone
 - `DECOMPOSE` — default `on`. enable the `decomposing` stage; `off` reverts to the legacy
   "no label → `workflow:implementing`" pickup, and sends an issue already sitting on `workflow:decomposing` the same
   way through that stage's own handler (once any half-finished split above it is settled) rather than spawning
