@@ -157,3 +157,16 @@ class MaxAddedLinesConfigTest(unittest.TestCase):
                     _config_cases._MAX_ADDED_LINES_ENV, error_message,
                 )
                 self.assertIn(spelling, error_message)
+
+
+class PickupLabelConfigTest(unittest.TestCase):
+    """PICKUP_LABEL is off (empty) unless named, and is read without the
+    whitespace an operator's `.env` may carry around it."""
+
+    def test_default_is_empty(self) -> None:
+        config = _reload.load_config()
+        self.assertEqual(config.PICKUP_LABEL, "")
+
+    def test_value_is_stripped(self) -> None:
+        config = _reload.load_config({"PICKUP_LABEL": "  agent-ready "})
+        self.assertEqual(config.PICKUP_LABEL, "agent-ready")

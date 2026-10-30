@@ -21,6 +21,7 @@ FakeGitHubClient = _client.FakeGitHubClient
 DEFAULT_BOT_LOGIN = _models.DEFAULT_BOT_LOGIN
 FakeComment = _models.FakeComment
 FakeIssue = _models.FakeIssue
+FakeIssueEvent = _models.FakeIssueEvent
 FakeLabel = _models.FakeLabel
 FakePR = _pull_request_models.FakePR
 DEFAULT_PR_HEAD_SHA = _pull_request_models.DEFAULT_PR_HEAD_SHA

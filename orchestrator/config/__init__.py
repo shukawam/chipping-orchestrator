@@ -90,6 +90,7 @@ __all__ = [
     "MAX_RETRIES_PER_DAY",
     "MAX_REVIEW_ROUNDS",
     "ORCHESTRATOR_BASE_BRANCH",
+    "PICKUP_LABEL",
     "POLL_INTERVAL",
     "PR_REF_IN_SUBJECT",
     "REMOTE_NAME",
@@ -447,6 +448,14 @@ IN_REVIEW_DEBOUNCE_SECONDS: int = _RESOLVED["IN_REVIEW_DEBOUNCE_SECONDS"]
 # the user can disable decomposition if manifest output proves unreliable,
 # without redeploying old binaries.
 DECOMPOSE: bool = _RESOLVED["DECOMPOSE"]
+
+# Opt-in label for the roads a human label opens: the unlabeled pickup and the
+# `question` / `discussion` conversations. Empty keeps every such issue
+# eligible, as before. Set, an issue enters only while it wears this label and
+# the newest application of it came from an `ALLOWED_ISSUE_AUTHORS` login,
+# which then stands in for the issue author's own allowlist check. Stages an
+# issue already carries are never gated by it.
+PICKUP_LABEL: str = _RESOLVED["PICKUP_LABEL"]
 
 # The size ceiling one implementation candidate may publish under, counted in
 # textual lines the prospective pull-request diff ADDS -- the frozen remote

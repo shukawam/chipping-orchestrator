@@ -199,3 +199,22 @@ class GitHubLabelMixin:
             return None
         self._label_cache[name] = label_object
         return label_object
+
+
+def last_labeler(issue: Issue, label_name: str) -> str | None:
+    """Return the login that most recently applied `label_name`, or None.
+
+    The events endpoint serves the timeline oldest first, so the last
+    `labeled` event for the name wins; names compare case-insensitively, as
+    GitHub's own label names do. A failed walk raises to the caller, which
+    decides how a history nobody could read is treated.
+    """
+    wanted_label = label_name.lower()
+    applier = None
+    for issue_event in issue.get_events():
+        if getattr(issue_event, "event", None) != "labeled":
+            continue
+        applied = getattr(getattr(issue_event, "label", None), "name", "") or ""
+        if applied.lower() == wanted_label:
+            applier = getattr(getattr(issue_event, "actor", None), "login", None)
+    return applier

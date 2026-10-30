@@ -504,6 +504,12 @@ examples.
 - `REVIEW_AGENT` — default `codex`. reviewer command spec
 - `DECOMPOSE_AGENT` — default `claude`. decomposer command spec (validated even when `DECOMPOSE=off`); also drives the
   `question` and `discussion` stages
+- `PICKUP_LABEL` — default empty (off). an opt-in label for the roads a human label opens: the unlabeled pickup and
+  the `question` / `discussion` conversations. Set, such an issue is entered only while it carries this label
+  (case-insensitive) and the newest `labeled` event for it came from a login in `ALLOWED_ISSUE_AUTHORS`; that check
+  replaces the issue-author check at pickup, and a label history that cannot be read admits nobody. Stages an issue
+  already carries (`workflow:*`, applied by the orchestrator or by hand) are never gated, so removing the label from an
+  issue in flight does not stop it
 - `DECOMPOSE` — default `on`. enable the `decomposing` stage; `off` reverts to the legacy
   "no label → `workflow:implementing`" pickup, and sends an issue already sitting on `workflow:decomposing` the same
   way through that stage's own handler (once any half-finished split above it is settled) rather than spawning

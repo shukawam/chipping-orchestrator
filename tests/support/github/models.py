@@ -60,6 +60,20 @@ class FakeLabel:
 
 
 @dataclass
+class FakeIssueEvent:
+    """One entry of an issue's event timeline, as PyGithub serves it."""
+
+    event: str
+    actor: FakeUser
+    label: FakeLabel | None = None
+
+
+def _copy_issue_events(issue: FakeIssue) -> list[FakeIssueEvent]:
+    """Serve an issue's event timeline the way the events endpoint does."""
+    return list(issue.events)
+
+
+@dataclass
 class FakeIssue:
     number: int
     title: str = "test issue"
@@ -74,8 +88,12 @@ class FakeIssue:
     commenter: FakeUser = field(
         default_factory=lambda: FakeUser(DEFAULT_BOT_LOGIN),
     )
+    # The issue's event timeline, oldest first, for a read that asks who
+    # applied a label.
+    events: list[FakeIssueEvent] = field(default_factory=list)
 
     get_comments = _copy_issue_comments
+    get_events = _copy_issue_events
 
     def create_comment(self, body: str) -> FakeComment:
         """Post one comment onto this thread and hand the posted one back.

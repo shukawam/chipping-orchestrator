@@ -376,6 +376,7 @@ class _SettingsResolver:
             "DECOMPOSE": env.get(
                 "DECOMPOSE", _DEFAULT_ENABLED,
             ).strip().lower() in _TRUE_VALUES,
+            "PICKUP_LABEL": env.get("PICKUP_LABEL", "").strip(),
             "SQUASH_ON_APPROVAL": env.get(
                 "SQUASH_ON_APPROVAL", _DEFAULT_ENABLED,
             ).strip().lower() in _TRUE_VALUES,

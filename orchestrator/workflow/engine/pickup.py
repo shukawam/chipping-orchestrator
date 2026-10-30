@@ -40,6 +40,7 @@ from orchestrator.github.pinned_state import PinnedState
 from orchestrator.workflow.engine import (
     comments as _comments,
     content_hash as _content_hash,
+    opt_in as _opt_in,
     usage as _usage,
 )
 from orchestrator.workflow.state import WorkflowLabel
@@ -52,6 +53,10 @@ def _pickup_author_allowed(spec: _config_models.RepoSpec, issue: Issue) -> bool:
     # anyone outside the list so random users can't burn agent budget on a
     # public repo. Maintainers can still drive an outsider's issue manually
     # by adding a workflow label themselves -- the guard only fires here.
+    # With PICKUP_LABEL set, the login that applied the opt-in label is
+    # vetted instead of the issue's author.
+    if config.PICKUP_LABEL:
+        return not _opt_in._opt_in_refuses(spec, issue, None)
     if not config.ALLOWED_ISSUE_AUTHORS:
         return True
     author = getattr(getattr(issue, "user", None), "login", None) or ""

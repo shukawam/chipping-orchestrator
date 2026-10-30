@@ -7,18 +7,21 @@ dispatching a stage in the same tick."""
 from __future__ import annotations
 
 import unittest
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from orchestrator import config
 from orchestrator.github.pinned_state import PinnedState
-from orchestrator.workflow.engine import pickup
+from orchestrator.workflow.engine import issue_processing as _issue_processing, pickup
 from orchestrator.workflow.stages.decomposition import run as _decomposing
 from orchestrator.workflow.stages.implementing import handler as _implementing
-from tests.support.fakes import FakeGitHubClient, make_issue
+from tests.support.fakes import FakeGitHubClient, FakeIssueEvent, FakeLabel, FakeUser, make_issue
 from tests.workflow.fixtures import _TEST_SPEC, _agent, _PatchedWorkflowMixin
 
 _DECOMPOSE_CONFIG = "DECOMPOSE"
 _ALLOWLIST_CONFIG = "ALLOWED_ISSUE_AUTHORS"
+_PICKUP_LABEL_CONFIG = "PICKUP_LABEL"
+_OPT_IN_LABEL = "agent-ready"
+_OPT_IN_APPLIER = "shukawam"
 _CLARIFICATION_MESSAGE = "need clarification"
 _IMPLEMENTING_LABEL = "workflow:implementing"
 _DECOMPOSING_LABEL = "workflow:decomposing"
@@ -146,6 +149,37 @@ class HandlePickupTest(unittest.TestCase, _PatchedWorkflowMixin):
             )
 
         self.assertIn((1, _IMPLEMENTING_LABEL), gh.label_history)
+
+
+class OptInPickupTest(unittest.TestCase):
+    """With `PICKUP_LABEL` set, whoever applied the label is vetted instead of
+    whoever opened the issue, and an issue without it never reaches pickup."""
+
+    def test_opt_in_replaces_author_allowlist(self) -> None:
+        issue = make_issue(_ISSUE_NUMBER, author="teammate")
+        issue.labels.append(FakeLabel(_OPT_IN_LABEL))
+        issue.events.append(FakeIssueEvent(
+            event="labeled", actor=FakeUser(_OPT_IN_APPLIER), label=FakeLabel(_OPT_IN_LABEL),
+        ))
+
+        with patch.object(config, _PICKUP_LABEL_CONFIG, _OPT_IN_LABEL), \
+             patch.object(config, _ALLOWLIST_CONFIG, (_OPT_IN_APPLIER,)):
+            self.assertTrue(pickup._pickup_author_allowed(_TEST_SPEC, issue))
+
+    def test_refused_issue_is_not_routed(self) -> None:
+        gh = FakeGitHubClient()
+        issue = make_issue(_ISSUE_NUMBER, author=_OPT_IN_APPLIER)
+        gh.add_issue(issue)
+
+        pickup_mock = MagicMock()
+        with patch.object(config, _PICKUP_LABEL_CONFIG, _OPT_IN_LABEL), \
+             patch.object(config, _ALLOWLIST_CONFIG, (_OPT_IN_APPLIER,)), \
+             patch.object(pickup, "_handle_pickup", pickup_mock):
+            _issue_processing._process_issue(gh, _TEST_SPEC, issue)
+
+        pickup_mock.assert_not_called()
+        self.assertEqual(gh.posted_comments, [])
+        self.assertEqual(gh.label_history, [])
 
 
 class PickupOwnerPatchTest(unittest.TestCase):

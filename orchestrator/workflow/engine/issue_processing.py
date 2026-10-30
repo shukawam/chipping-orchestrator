@@ -27,6 +27,7 @@ from orchestrator.scheduler import writer_claims as _writer_claims
 from orchestrator.workflow.engine import (
     contended_closes as _contended_closes,
     dispatch_guards as _dispatch_guards,
+    opt_in as _opt_in,
     poll_models as _poll_models,
     poll_reading as _poll_reading,
     publication_holds as _publication_holds,
@@ -179,6 +180,8 @@ def _process_issue(
     # nothing to time.
     label = gh.workflow_label(issue)
     if _poll_reading._hard_skipped(spec, issue, label, reading):
+        return
+    if _opt_in._opt_in_refuses(spec, issue, label):
         return
     log.info("repo=%s issue=#%s label=%r", spec.slug, issue.number, label)
     # Time the handler dispatch and append a single `stage_evaluation`
