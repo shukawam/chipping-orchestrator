@@ -509,7 +509,8 @@ examples.
   (case-insensitive) and the newest `labeled` event for it came from a login in `ALLOWED_ISSUE_AUTHORS`; that check
   replaces the issue-author check at pickup, and a label history that cannot be read admits nobody. Stages an issue
   already carries (`workflow:*`, applied by the orchestrator or by hand) are never gated, so removing the label from an
-  issue in flight does not stop it
+  issue in flight does not stop it. Like `backlog` / `paused`, an issue the gate refuses is dropped before the
+  poll partitions issues, so unopted unlabeled issues never hold the per-repo slot a fan-out stage needs
 - `OPEN_PR_AS_DRAFT` — default `off`. open every pull request the orchestrator creates (implementation and
   discussion plan PRs) as a draft. The orchestrator never marks a draft ready for review; a human does, before merging
 - `COMMUNITY_PR_SWEEP` — default `on`. the per-tick sweep that labels open PRs from authors outside

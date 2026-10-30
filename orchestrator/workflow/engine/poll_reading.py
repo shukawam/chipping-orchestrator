@@ -21,6 +21,7 @@ from orchestrator.github.issues import (
 )
 from orchestrator.github.labels import hard_skip_control_label
 from orchestrator.workflow.engine import (
+    opt_in as _opt_in,
     poll_models as _poll_models,
 )
 from orchestrator.workflow.state import WorkflowLabel
@@ -96,7 +97,12 @@ def _read_issue_routing(
             "tick; skipping", spec.slug, issue.number, label,
         )
         return True, label
-    return _hard_skipped(spec, issue, label, _poll_models._POLLED_OPEN), label
+    if _hard_skipped(spec, issue, label, _poll_models._POLLED_OPEN):
+        return True, label
+    # An issue the PICKUP_LABEL gate would refuse is dropped here too, for the
+    # same reason a parked one is: left in, an unopted label-less issue keeps
+    # the family bucket cap-counted every tick and starves fan-out work.
+    return _opt_in._opt_in_refuses(spec, issue, label), label
 
 
 def _hard_skipped(
