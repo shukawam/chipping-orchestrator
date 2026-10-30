@@ -1014,7 +1014,8 @@ than a second source of truth: where the two disagree, the handler pages are aut
                                    or granted. The in-tick handoff ready makes
                                    into workflow:implementing asks it too.
                                    Beside an auto-rebase anchor it is asked
-                                   AHEAD of the anchor's hold and RETIRED,
+                                   AHEAD of the anchor's hold and RETIRED --
+                                   HELD where the anchor reads as no commit --
                                    the refresh having held the branch for it,
                                    so the anchor's recovery resets or pushes
                                    nothing the capture is about first

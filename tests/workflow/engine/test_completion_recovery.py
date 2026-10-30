@@ -149,6 +149,9 @@ _UNREAD = MappingProxyType({
         pull_request=True, label=_ON_VALIDATING, road=_REFRESH,
     ),
     "accounting unresolved": Case(Turn(members=_UNACCOUNTED), _Reason.ACCOUNTING_UNRESOLVED),
+    "anchor unreadable": Case(
+        Turn(edits=MappingProxyType({"pending_auto_base_rebase_push_sha": "not-a-commit"})), _Reason.ANCHOR_UNREAD,
+    ),
     "accounting beside a damaged counter": Case(
         Turn(members=_UNACCOUNTED, edits=MappingProxyType({**_RECEIPTED, "issue_total_tokens": "many"})),
         _Reason.ACCOUNTING_UNRESOLVED,

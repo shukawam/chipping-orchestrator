@@ -102,6 +102,8 @@ class Reason(StrEnum):
     PULL_REQUEST_UNREAD = "the pull request could not be read"
     # UNCERTAIN: a record its road answers is claimed in a shape nobody can read.
     PREREQUISITE_UNREAD = "a record its road answers cannot be read"
+    # UNCERTAIN: an auto-rebase anchor stands beside it and reads as no commit.
+    ANCHOR_UNREAD = "an auto-rebase anchor beside it cannot be read as a commit"
     # UNCERTAIN: its run's usage was captured unaccounted, and no receipt of it reads back.
     ACCOUNTING_UNRESOLVED = "its run's usage accounting has not read back"
     # DAMAGED: the capture, or the cycle it is bound to, reads as nothing this build writes.

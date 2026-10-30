@@ -24,6 +24,7 @@ from orchestrator.workflow.engine import (
     completion_records as _records,
     completion_routes as _routes,
     completion_spelling as _spelling,
+    invocations as _invocations,
     prompt_context as _prompt_context,
 )
 from orchestrator.workflow.state import WorkflowLabel
@@ -107,10 +108,10 @@ def _handoff(github: FakeGitHubClient, issue, taken_on: tuple) -> _records.Compl
 
 
 def _returned(state, issue_number: int) -> AgentResult:
-    """A completed READY return, from a process charged on the comment `state` was read from."""
+    """A completed READY return, from a process charged on the comment `state` was read from, in its cycle."""
     invocation = AgentInvocation(
-        repo=state.repo_slug, issue=issue_number, comment=state.comment_id, cycle=0, ordinal=ORDINAL,
-        nonce=NONCE,
+        repo=state.repo_slug, issue=issue_number, comment=state.comment_id, cycle=_invocations.cycle_of(state),
+        ordinal=ORDINAL, nonce=NONCE,
     )
     return AgentResult(
         session_id="dev-sess", last_message=_READY, exit_code=0, timed_out=False, stdout="", stderr="",

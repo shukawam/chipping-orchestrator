@@ -794,8 +794,8 @@ move. A capture is answered ahead of that hold instead: the anchor's recovery re
 pushes a replay, whenever it cannot prove the attempt — an unreadable remote is enough — which would take the commit
 the captured report is about off the branch before anything decided on it, so the dispatcher decides the capture
 first and retires it `invalidated` (no road hands a report on over a rewrite no recovery finished), and the next
-refresh answers the anchor as it always would. A capture nobody can read, or a retirement that did not land, keeps
-both sides where they stand for a human or a later tick. None of
+refresh answers the anchor as it always would. A capture nobody can read, an anchor that reads as no commit, or a
+retirement that did not land, keeps both sides where they stand for a human or a later tick. None of
 them is holding a branch still against a rebase any more — the anchor says one already ran — so the recovery reaches
 the checkout, pushes the replay its record names or puts the branch back on the anchor and asks a human, and leaves
 each record for its owner. A recovery that takes the anchor down and lets the tick go on — the landed clear of an
@@ -2021,9 +2021,10 @@ The keys that matter for the state machine fall into a few groups:
   or a relabel landing meanwhile, the stage is held with nothing written, and so is a
   capture whose run's usage was captured `unresolved` until that run's receipt reads back on the ledger beside
   readable counters. Beside an auto-rebase anchor it is decided ahead of the anchor's hold and
-  retired, since no road hands a report on over a rewrite no recovery finished. Until it is resolved it keeps the
-  issue's checkout out of the base refresh, beside an anchor too ([Base refresh](#base-refresh)), and none of it
-  charges a run, clears a park, or grants an invocation.
+  retired, since no road hands a report on over a rewrite no recovery finished -- or held, where the anchor reads as
+  no commit; a late revision is held the same way beside a late record whose measurement nobody can read. Until it
+  is resolved it keeps the issue's checkout out of the base refresh, beside an anchor too
+  ([Base refresh](#base-refresh)), and none of it charges a run, clears a park, or grants an invocation.
 - **Rewritten-head report debt.** `developer_report_rewrite_debt` is the report a pull request is owed because this
   orchestrator rewrote its head (`workflow/engine/report_rewrite_debt.py`): `pr`, `branch`, `previous_head` -- the head
   the rewrite replaced, the first one across a retargeting, which is the head the settled report is about -- and

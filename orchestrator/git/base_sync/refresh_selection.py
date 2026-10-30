@@ -275,10 +275,11 @@ def _state_holds_the_branch(
     there as invalidated, since no road may hand a report on over a rewrite
     no recovery has finished; the next refresh then recovers the anchor as it
     always would, and the two never wait on each other. A capture nobody can
-    read is held on both sides until a human repairs or removes it, as damage
-    is everywhere. A capture is taken only by a handler the anchor's hold
-    keeps back, and a capture holds every walk that would pin an anchor, so
-    the two meet only on a record somebody edited.
+    read, and an anchor that reads as no commit, are held on both sides until
+    a human repairs or removes them, as damage is everywhere. A capture is
+    taken only by a handler the anchor's hold keeps back, and a capture holds
+    every walk that would pin an anchor, so the two meet only on a record
+    somebody edited.
     """
     anchored = bool(state.get(_PENDING_PUSH_SHA))
     held = (

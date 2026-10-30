@@ -21,6 +21,8 @@ from orchestrator.workflow.engine import (
     completion_frozen as _frozen,
     completion_records as _records,
     completion_recovery as _recovery,
+    completion_recovery_models as _models,
+    completion_routes as _routes,
 )
 from orchestrator.workflow.state import WorkflowLabel
 from tests.workflow.engine import completion_dispatch_support as _dispatch, completion_recovery_support as _support
@@ -58,6 +60,30 @@ _PAUSED = Turn(labels=(_IMPLEMENTING, PAUSED_LABEL))
 _PARKED = Turn(edits=_RUN_LIMIT_PARK)
 
 _RECORD_MOVED = Turn(edits=MappingProxyType({_FROZEN_RECORD: _ROUND_MOVED}))
+
+# A live late adjudication of the issue's own candidate, measured past its ceiling.
+_ADJUDICATING = MappingProxyType({
+    "late_cycle_id": 1,
+    "late_generation": 1,
+    "late_root_issue": _NUMBER,
+    "late_current_issue": _NUMBER,
+    "late_lineage_depth": 0,
+    "late_candidate_sha": _support.SOURCE,
+    "late_base_sha": _support.BEFORE,
+    "late_threshold": 100,
+    "late_additions": 500,
+    "late_phase": "adjudicating",
+})
+
+# A hand edit leaving that adjudication's ceiling as nothing its reader takes.
+_UNREADABLE_MEASUREMENT = Turn(edits=MappingProxyType({"late_threshold": "unreadable"}))
+
+
+def _revised_world() -> tuple[_support.CapturedWorld, _records.CompletionCapture]:
+    """A world under a live late adjudication, its developer revision captured in that adjudication's cycle."""
+    world = _support.CapturedWorld(WorkflowLabel.DECOMPOSING)
+    world.hand_edit(**_ADJUDICATING)
+    return world, world.captured(_support.road(_routes.CompletionRoute.LATE_REVISION, WorkflowLabel.DECOMPOSING))
 
 
 def _frozen_world() -> tuple[_support.CapturedWorld, _records.CompletionCapture]:
@@ -170,6 +196,31 @@ class FrozenHandoffTest(unittest.TestCase):
         seen = _dispatch.observed(world, _dispatch.RoadOwner())
 
         self.assertEqual([admitted.capture for admitted in seen.handed], [captured])
+
+
+class LateRevisionTest(unittest.TestCase):
+    """A late revision is handed on over the live adjudication it answers, and held over one nobody can read."""
+
+    def test_a_live_adjudication_hands_it_on(self) -> None:
+        world, captured = _revised_world()
+
+        seen = _dispatch.observed(world, _dispatch.RoadOwner())
+
+        self.assertEqual([admitted.capture for admitted in seen.handed], [captured])
+
+    def test_an_unreadable_measurement_holds_it(self) -> None:
+        # A measurement that will not read is no live adjudication to the
+        # reader that asks, and no proof one ended either: the capture is
+        # kept, with nothing written, handed on, or run.
+        world, captured = _revised_world()
+
+        seen = _dispatch.observed(world, _dispatch.RoadOwner(), _UNREADABLE_MEASUREMENT)
+
+        held = seen.says(_models.Reason.PREREQUISITE_UNREAD, _models.Standing.UNCERTAIN)
+        self.assertTrue(held, seen.said)
+        self.assertEqual(_support.read_capture(seen.after), captured)
+        self.assertEqual((seen.ran, seen.handed), ((), ()))
+        self.assertTrue(seen.untouched)
 
 
 if __name__ == "__main__":

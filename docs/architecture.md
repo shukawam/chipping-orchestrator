@@ -642,7 +642,8 @@ run's receipt has read back, retired as invalidated where a reading proves it st
 nothing written where a reading fails or the claim is damaged, and waited through on a dependency hold, the `ready`
 decision, and an
 unlabeled issue; the base refresh keeps its checkout where the run left it until then, beside an auto-rebase anchor
-too, where the capture is decided ahead of the anchor's hold and retired before that recovery may reset or push
+too, where the capture is decided ahead of the anchor's hold and retired before that recovery may reset or push --
+or held, where the anchor reads as no commit
 ([`state-machine/delivery-stages.md`](state-machine/delivery-stages.md#the-captured-completion-recovery-every-dispatch))
 — an ordinary split's child whose pinned seed is not the one the receipt in its body owes it, held under every label
 but a terminal, pickup included, directly behind the agent-run-limit hold and ahead of a live adjudication's step

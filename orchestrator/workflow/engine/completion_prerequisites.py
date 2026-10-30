@@ -17,7 +17,14 @@ they stand (`road_refusal`):
 - a late revision answers a live adjudication
   (`stages/decomposition/late_relabel._adjudicating`, asked when called, as the
   engine reaches every stage owner), and one that ended leaves the revision
-  nothing to be measured by.
+  nothing to be measured by -- but a late record claiming a reading the
+  comment cannot produce (`stages/implementing/late_claims._claims_a_reading`)
+  answers that question for nobody, since its damage reads as no live
+  adjudication too.
+
+An auto-rebase anchor beside the capture is asked here as well
+(`anchor_refusal`): one that reads as a commit is a rewrite of the branch no
+recovery has finished, and one that does not is evidence nobody can read.
 
 A record saying a prerequisite is gone proves the capture stale; one claiming
 it in a shape nobody can read holds the capture.
@@ -35,6 +42,7 @@ from __future__ import annotations
 
 import importlib
 
+from orchestrator.git.base_sync import state as _base_sync_state
 from orchestrator.github.pinned_state import PinnedState
 from orchestrator.workflow.engine import (
     completion_records as _records,
@@ -45,9 +53,13 @@ from orchestrator.workflow.engine import (
     usage_counters as _usage_counters,
     usage_receipts as _usage_receipts,
 )
+from orchestrator.workflow.late_split import formats as _formats, payloads as _payloads
 from orchestrator.workflow.state import WorkflowLabel
 
 _PR_NUMBER = "pr_number"
+
+# The anchor an auto rebase pins before git runs, spelled by the base sync.
+_ANCHOR = _base_sync_state._PENDING_PUSH_SHA
 
 # The stages only a pull request reaches, so a report under one is owed to the pull request the record names.
 _PULL_REQUEST_STAGES = frozenset((
@@ -94,9 +106,31 @@ def _debt_refusal(state: PinnedState, capture: _records.CompletionCapture) -> _m
     return None if debt.rewritten_head in {capture.run.before_sha, capture.run.source_sha} else _GONE
 
 
+def anchor_refusal(state: PinnedState) -> _models.Decision | None:
+    """Why an auto rebase begun over the capture's branch, and not yet recovered, refuses it; or None.
+
+    The anchor's recovery resets the checkout onto the anchor or pushes the
+    replay whenever it cannot prove the attempt, so the commit the report is
+    about is no longer the branch's to hand on: no road publishes over a
+    rewrite no recovery has finished. Decided ahead of that recovery, so the
+    capture is retired before the checkout is touched, and never left for the
+    anchor and the capture to wait on each other. Only an anchor that reads
+    as a commit proves that rewrite: one that does not is evidence nobody can
+    read, and holds the capture.
+    """
+    anchor = state.get(_ANCHOR)
+    if not anchor:
+        return None
+    if _payloads.as_hex(anchor, _formats.COMMIT_LENGTHS) is None:
+        return _models.Decision(_models.Standing.UNCERTAIN, _models.Reason.ANCHOR_UNREAD)
+    return _models.Decision(_models.Standing.INVALID, _models.Reason.ANCHORED)
+
+
 def _adjudication_refusal(state: PinnedState, capture: _records.CompletionCapture) -> _models.Decision | None:
-    """A late revision beside no live adjudication: gone."""
+    """A late revision beside a late record nobody can read: held; beside no live adjudication: gone."""
     if capture.handoff.route is not _routes.CompletionRoute.LATE_REVISION:
         return None
+    if importlib.import_module(_stage_targets._LATE_CLAIMS_OWNER)._claims_a_reading(state):
+        return _models.Decision(_models.Standing.UNCERTAIN, _models.Reason.PREREQUISITE_UNREAD)
     late_relabel = importlib.import_module(_stage_targets._LATE_RELABEL_OWNER)
     return None if late_relabel._adjudicating(state) else _GONE

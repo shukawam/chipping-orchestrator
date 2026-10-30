@@ -410,8 +410,8 @@ def _anchor_holds_the_tick(
     off the branch before anything decided on it; and the capture is retired
     here, since no road may hand a report on over an unfinished rewrite, so
     the next refresh recovers the anchor and neither waits on the other. A
-    retirement that did not land, or a capture nobody can read, stops the
-    tick with the anchor left as it stands.
+    retirement that did not land, a capture nobody can read, or an anchor
+    that reads as no commit stops the tick with the anchor left as it stands.
     """
     if state.get(_ANCHOR) and capture_holds_the_tick(gh, spec, issue, label, state):
         return True

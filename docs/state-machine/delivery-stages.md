@@ -2016,7 +2016,8 @@ and handed off -- and this is what it guarantees and what stops it.
   whether the tick stops. No road names an owner in this build, so an applicable capture holds the stage, every tick,
   rather than letting it run the paid work again. This owner publishes nothing and infers no review, verification,
   approval, or docs pass.
-- **Retires** a capture a reading proved stale -- an auto rebase of its branch begun and not recovered, the issue
+- **Retires** a capture a reading proved stale -- an auto rebase of its branch begun and not recovered, its anchor
+  reading as a commit, the issue
   closed or labelled `done` or `rejected`, moved onto any other road than the one it reported on, a record its
   handoff froze moved, the pull request, debt, or adjudication its road answers gone, the requirements edited, the
   record pinning another branch, the checkout moved off the commit the report is about, the pull request merged,
@@ -2031,7 +2032,9 @@ and handed off -- and this is what it guarantees and what stops it.
   refused or never confirmed holds the tick, and a later one decides afresh or reads what landed.
 - **Holds**, with nothing written, a capture nothing proves stale: a comment, issue, thread, or pull request that
   would not read, controls or a label that moved during the dispatch, a record naming no branch live work may use, a
-  report debt its road answers claimed in a shape nobody can read, a checkout missing, unreadable, at another path,
+  report debt its road answers claimed in a shape nobody can read, a late revision beside a late record claiming a
+  measurement the comment cannot produce, an auto-rebase anchor that reads as no commit, a checkout missing,
+  unreadable, at another path,
   or not proven the issue's own -- nothing here adopts, resets, recreates, or deletes one -- a run captured with its
   usage unaccounted whose receipt has not read back, since an accounting checkpoint that neither landed nor read back
   permits that run's accounting alone, and every damaged claim: a capture or cycle identity nobody can read, or a
@@ -2052,7 +2055,8 @@ and handed off -- and this is what it guarantees and what stops it.
   ([Base refresh](labels-and-state.md#base-refresh)), beside an auto-rebase anchor too: that anchor's recovery resets
   or replaces the checkout whenever it cannot prove its attempt, so the capture is decided first, ahead of the
   anchor's hold, and retired -- no road hands a report on over a rewrite no recovery finished -- and the next refresh
-  recovers the anchor; a capture nobody can read keeps both where they stand.
+  recovers the anchor; a capture nobody can read, or an anchor that reads as no commit, keeps both where they
+  stand.
 
 ## The seed hold (every dispatch, ahead of the reuse guard)
 - **Trigger**: `_pinned_state_refuses` (`workflow/engine/dispatch_guards.py`) on any issue this orchestrator opened

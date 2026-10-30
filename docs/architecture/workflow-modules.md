@@ -1204,7 +1204,8 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             request's head, and no charge, grant, or park
     completion_admission.py one reading of a pending capture, the cheapest first and writing nothing: its read-back
                             through the checkpoint, the only source it is read from; the issue fetched again for
-                            its controls, label, and state; an auto-rebase anchor beside it, which retires it; the
+                            its controls, label, and state; an auto-rebase anchor beside it, which retires it or,
+                            reading as no commit, holds it; the
                             road it reported on, the records its handoff froze, and what that road stands on
                             (`completion_prerequisites.py`); the requirements, fingerprinted as a developer prompt
                             is handed them; and the sources behind them, an unaccounted run's receipt read before
@@ -1216,8 +1217,11 @@ workflow/                   publishes labels, transition guards, and the lazy pe
     completion_prerequisites.py what a pending capture's road still has to stand on -- the pull request a report under
                             a pull-request stage is owed to, the rewritten-head debt a report refresh answers naming
                             the head its run started on or reported on, the live adjudication a late revision
-                            answers (`stages/decomposition/late_relabel.py`, resolved when called) -- gone proving
-                            the capture stale and unreadable holding it; and, for a run captured with its usage
+                            answers (`stages/decomposition/late_relabel.py`, resolved when called, a late record
+                            `stages/implementing/late_claims.py` finds claiming a reading it cannot produce
+                            holding it) -- gone proving the capture stale and unreadable holding it; an auto-rebase
+                            anchor beside it, retiring it where it reads as a commit and holding it where it does
+                            not; and, for a run captured with its usage
                             unaccounted, the receipt of it read back beside counters its writers would write,
                             without which the capture is held
     completion_sources.py   whether the branch the live resolver names, the issue's own checkout at its own path and
