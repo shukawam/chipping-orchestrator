@@ -1002,7 +1002,8 @@ than a second source of truth: where the two disagree, the handler pages are aut
                                    request moved, its road's pull request,
                                    debt, or adjudication gone) RETIRES it
                                    invalidated, owning the capture alone and
-                                   decided on the reading that proved it,
+                                   held to the whole reading that proved it,
+                                   the controls read again before the write,
                                    and the handler runs; a read nobody could
                                    take, an unaccounted run's receipt not
                                    read back, and a damaged claim HOLD with

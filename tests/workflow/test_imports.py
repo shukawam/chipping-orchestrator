@@ -81,6 +81,7 @@ _ENGINE_OWNERS = (
     "completion_recovery_models",
     "completion_sources",
     "completion_prerequisites",
+    "completion_evidence",
     "completion_admission",
     "completion_recovery",
     "completion_verdicts",

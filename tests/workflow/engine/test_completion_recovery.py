@@ -13,8 +13,11 @@ written.
 """
 from __future__ import annotations
 
+import itertools
 import unittest
+from dataclasses import replace
 from types import MappingProxyType
+from unittest.mock import patch
 
 from orchestrator.git.worktrees.models import ProbeAnswer
 from orchestrator.workflow.engine import (
@@ -23,6 +26,7 @@ from orchestrator.workflow.engine import (
     completion_routes as _routes,
 )
 from orchestrator.workflow.state import WorkflowLabel
+from tests.support.github.models import FakeLabel
 from tests.workflow.engine import completion_dispatch_support as _dispatch, completion_recovery_support as _support
 from tests.workflow.engine.completion_turn_support import Case, Turn
 
@@ -50,6 +54,19 @@ _DEBT = "developer_report_rewrite_debt"
 _RECEIPTS = "issue_usage_receipts"
 
 _EARLIER = "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+
+# The operator control applied while a decision's readings are taken.
+_PAUSED = "paused"
+
+# The pinned readings a dispatch takes up to its retirement commit's own: the
+# dispatcher's, the capture's read-back, the retirement's, and its commit's.
+_COMMIT_READING = 4
+
+# What a control lands behind: readings proving the capture stale, and readings admitting it.
+_BEHIND_THE_PROOF = MappingProxyType({
+    "a proof of staleness": Turn(comment="Also cover the edge case."),
+    "an admission": Turn(),
+})
 
 
 def _debt_of(rewritten: str) -> MappingProxyType:
@@ -283,6 +300,54 @@ class UndecidedCaptureTest(unittest.TestCase):
         self.assertTrue(seen.says(case.reason, standing), seen.said)
         self.assertEqual((seen.ran, seen.handed), ((), ()))
         self.assertTrue(seen.untouched)
+
+
+class EffectRecheckTest(unittest.TestCase):
+    """What a decision read is read once more behind the effect it makes, and a move there holds the capture."""
+
+    def test_a_restored_prerequisite_keeps_it(self) -> None:
+        # The road's pull request is gone when the dispatch reads the comment,
+        # and somebody puts it back while the retirement's own commit reads it
+        # again: the commit is held to the whole reading the proof was taken
+        # over, a field it lacked included, so nothing is written or run, and
+        # the next dispatch hands the capture on.
+        world = _support.CapturedWorld(_ON_VALIDATING, pull_request=True)
+        captured = world.captured(_DRIFT)
+        world.hand_edit(pr_number=_support.DROPPED)
+        restored = _support.RepairedBehind(world, _COMMIT_READING, pr_number=_support.PR_NUMBER)
+
+        with patch.object(world.github, "read_pinned_state", side_effect=restored):
+            held = _dispatch.observed(world, _dispatch.RoadOwner())
+
+        self.assertEqual(_support.read_capture(held.after), captured)
+        self.assertEqual(held.writes, 0, "nothing is written over the capture")
+        self.assertEqual((held.ran, held.handed), ((), ()))
+        again = _dispatch.observed(world, _dispatch.RoadOwner())
+        self.assertEqual(len(again.handed), 1)
+
+    def test_a_control_behind_the_proof_keeps_it(self) -> None:
+        # `paused` lands while the readings behind a decision are taken -- one
+        # proving the capture stale, and one admitting it: the issue fetched
+        # again right before the effect holds both, with nothing written,
+        # handed on, or run.
+        for name, turn in _BEHIND_THE_PROOF.items():
+            with self.subTest(name):
+                seen = self._paused_behind(turn)
+
+                self.assertTrue(seen.says(_Reason.ISSUE_UNREAD, _Standing.UNCERTAIN), seen.said)
+                self.assertEqual(_stage(seen.after), _records.CaptureStage.PENDING)
+                self.assertEqual(seen.writes, 0)
+                self.assertEqual((seen.ran, seen.handed), ((), ()))
+
+    def _paused_behind(self, turn: Turn) -> _dispatch.Observed:
+        """A dispatch after `turn`, `paused` applied behind the first fetch of the issue its admission takes."""
+        world = _support.CapturedWorld()
+        world.captured()
+        labels = [*world.issue.labels, FakeLabel(_PAUSED)]
+        paused = replace(world.issue, labels=labels)
+        fetched = itertools.chain((world.issue,), itertools.repeat(paused))
+        with patch.object(world.github, "get_issue", side_effect=fetched):
+            return _dispatch.observed(world, _dispatch.RoadOwner(), turn)
 
 
 if __name__ == "__main__":

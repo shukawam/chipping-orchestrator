@@ -378,7 +378,8 @@ and a handed-off one is neither replaced nor retired until the transaction its d
 holding that delivery to the commit the capture reported on. A transfer's read-back or retry, and a capture's or
 retirement's retry finding the capture past pending, hands its caller the delivery that landed.
 A pending capture is handed on only over readings that admit it, its road's own prerequisites included, retired only
-by a guarded invalidation a reading proved, decided on that very reading so a comment that moved since refuses it, and
+by a guarded invalidation a reading proved, held to that very reading whole so a comment that moved since -- a missing
+field restored included -- refuses it, and
 held with nothing written where a reading fails or the claim is damaged: an unreadable prerequisite never discards it,
 and a cancelled or restarted cycle never inherits it.
 A capture is taken only where it, and then that transfer, its binding, and its settlement, still fit the comment
@@ -552,8 +553,9 @@ publication, a label, a park, a consumed input, a further launch -- is written o
 stage outcome a replay. A captured completion waits through `paused`/`backlog`, a dependency hold, the `ready`
 decision, and a spent run ledger's park, none released, re-baselined, or cleared by it, and its recovery charges no
 run and grants no invocation; one whose run's accounting checkpoint neither landed nor read back is handed on to no
-road until that run's receipt reads back. Lifetime agent-run charges and the grant that permits further runs are
-covered by [C-15].
+road until that run's receipt reads back, and the issue's controls are read again right before the capture is retired
+or handed on, so a hold applied while its readings were taken writes nothing. Lifetime agent-run charges and the
+grant that permits further runs are covered by [C-15].
 
 **Specs:** [controls](state-machine/labels-and-state.md#workflow-labels),
 [waiting for human action](state-machine.md#per-tick-flow-workflowengineticktick),

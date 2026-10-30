@@ -42,7 +42,7 @@ the capture is decided once the issue is back on its road.
 """
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from enum import StrEnum
 
 from github.Issue import Issue
@@ -135,6 +135,10 @@ class AdmittedCompletion:
     state: PinnedState
     capture: _records.CompletionCapture
     pull_request_head: str | None = None
+
+    def refetched(self, issue: Issue) -> AdmittedCompletion:
+        """This handoff with `issue` as the one its last fetch answered."""
+        return replace(self, issue=issue)
 
 
 @dataclass(frozen=True)

@@ -119,7 +119,7 @@ def decided(
     refused = _record_refusal(gh, issue, state, capture)
     if refused is not None:
         return refused
-    fresh = _live_issue(gh, issue, label)
+    fresh = live_issue(gh, issue, label)
     if isinstance(fresh, _models.Decision):
         return fresh
     refused = (
@@ -156,8 +156,13 @@ def _record_refusal(
     return None
 
 
-def _live_issue(gh: GitHubClient, issue: Issue, label: WorkflowLabel | None) -> Issue | _models.Decision:
-    """The issue fetched afresh, where its controls and label still read as the dispatch resolved them."""
+def live_issue(gh: GitHubClient, issue: Issue, label: WorkflowLabel | None) -> Issue | _models.Decision:
+    """The issue fetched afresh, where its controls and label still read as the dispatch resolved them.
+
+    Asked once ahead of the road's readings, and again by the recovery right
+    before the effect a decision makes, since a control or a relabel can land
+    while those readings are taken.
+    """
     try:
         fresh = gh.get_issue(issue.number)
     except Exception:  # noqa: BLE001 - an issue nobody could fetch holds the capture, never invalidates it

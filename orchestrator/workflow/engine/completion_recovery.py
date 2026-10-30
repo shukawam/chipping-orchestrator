@@ -90,7 +90,8 @@ def capture_holds_the_tick(
     unheld = _state.carries(state) and hard_skip_control_label(issue) is None
     if not unheld or isinstance(_state.read(state), _records.ResolvedCapture):
         return False
-    decision = _admission.decided(gh, spec, issue, label, state)
+    decided = _admission.decided(gh, spec, issue, label, state)
+    decision = _held_at_the_effect(gh, issue, label, decided)
     if decision.standing is _models.Standing.WAITING:
         log.info(
             "issue=#%d carries a captured completion and %s; leaving it captured for the %r stage",
@@ -107,6 +108,28 @@ def capture_holds_the_tick(
         issue.number, decision.standing, decision.reason, label,
     )
     return True
+
+
+def _held_at_the_effect(
+    gh: GitHubClient, issue: Issue, label: WorkflowLabel | None, decision: _models.Decision,
+) -> _models.Decision:
+    """`decision`, or the hold the issue read once more right before its effect makes of it.
+
+    A retirement and a handoff are effects, and the readings behind either take
+    requests a control or a relabel can land between: so the controls and the
+    label are fetched again behind them (`completion_admission.live_issue`),
+    and a fetch that fails, a `paused` or `backlog` applied, or a label moved
+    holds the capture with nothing written. An admitted capture is handed on
+    with the issue that last fetch answered.
+    """
+    if decision.standing is not _models.Standing.INVALID and decision.admitted is None:
+        return decision
+    fresh = _admission.live_issue(gh, issue, label)
+    if isinstance(fresh, _models.Decision):
+        return fresh
+    if decision.admitted is None:
+        return decision
+    return _models.Decision(_models.Standing.APPLICABLE, admitted=decision.admitted.refetched(fresh))
 
 
 def _invalidates(gh: GitHubClient, issue: Issue, state: PinnedState, reason: _models.Reason | None) -> bool:

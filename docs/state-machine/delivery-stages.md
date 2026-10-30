@@ -2023,9 +2023,12 @@ and handed off -- and this is what it guarantees and what stops it.
   closed, replaced, or pushed over -- through `completion_checkpoint.retire` as `invalidated`: a guarded commit
   owning the capture alone and keeping its invocation, so nothing of it is published and a later capture of it is
   refused. It is decided on the reading the proof was taken over: a comment that no longer reads as that reading --
-  a human's repair of the very record that proved it stale among them -- refuses it, and every field of it is held
-  unmoved through the commit. The stage then runs as it would without one; a retirement refused or never confirmed
-  holds the tick, and a later one decides afresh or reads what landed.
+  a human's repair of the very record that proved it stale among them -- refuses it, and the commit itself is held
+  to that whole reading (`completion_evidence.DecidedOn`), so a field the reading lacked and somebody restored or
+  added meanwhile refuses it too. The issue's controls and label are fetched once more right before the retirement,
+  as before a handoff, and a fetch that fails, a `paused` or `backlog` applied, or a label moved while the readings
+  were taken holds the capture with nothing written. The stage then runs as it would without one; a retirement
+  refused or never confirmed holds the tick, and a later one decides afresh or reads what landed.
 - **Holds**, with nothing written, a capture nothing proves stale: a comment, issue, thread, or pull request that
   would not read, controls or a label that moved during the dispatch, a record naming no branch live work may use, a
   report debt its road answers claimed in a shape nobody can read, a checkout missing, unreadable, at another path,

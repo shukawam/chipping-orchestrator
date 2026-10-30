@@ -1194,8 +1194,8 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             escaped room refuses -- leaving the run's usage checkpoint to its own; its read-back; and
                             its retirement, a pending one only as INVALIDATED and a handoff only once its report has
                             settled or been superseded, an INVALIDATED one decided on the whole reading its caller
-                            holds -- refused where the comment no longer reads as it, and every field held unmoved
-                            through the commit.
+                            holds -- refused where the comment no longer reads as it, and its commit held to that
+                            reading whole (`completion_evidence.py`), a field the reading lacked included.
                             Dormant: no stage captures a completion yet
     completion_recovery_models.py the five answers one reading of a pending capture gives -- applicable, invalid,
                             uncertain, damaged, and waiting -- the reason each is said with, and the immutable
@@ -1210,6 +1210,9 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             is handed them; and the sources behind them, an unaccounted run's receipt read before
                             the pull request. A dependency hold, the `ready` decision, and an unlabeled issue are
                             waited through
+    completion_evidence.py  what an invalidation is decided on: the whole reading its proof was taken over, asked of
+                            the candidate the retirement's commit derives (`DecidedOn`), so a field moved, restored,
+                            or added since refuses it as EVIDENCE_MOVED
     completion_prerequisites.py what a pending capture's road still has to stand on -- the pull request a report under
                             a pull-request stage is owed to, the rewritten-head debt a report refresh answers naming
                             the head its run started on or reported on, the live adjudication a late revision
@@ -1223,7 +1226,8 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             pending capture reported on; a reading that fails or misses its head's branch, commit,
                             or repository, or a checkout nothing proves the issue's own, holds the capture rather
                             than proving it stale
-    completion_recovery.py  the dispatch guard that decides a pending capture ahead of every stage handler: an
+    completion_recovery.py  the dispatch guard that decides a pending capture ahead of every stage handler, the
+                            issue's controls and label fetched once more right before a retirement or a handoff: an
                             applicable one handed to its road's owner (`ROUTE_OWNERS`, resolved when called -- none
                             in this build, so the stage is held), a stale one retired `invalidated` by the
                             checkpoint's guarded retirement, an uncertain or damaged one held with nothing written,

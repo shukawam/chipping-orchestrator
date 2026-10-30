@@ -78,6 +78,7 @@ from orchestrator.workflow.engine import (
     pinned_commit as _pinned_commit,
     pinned_commit_models as _commit_models,
 )
+from orchestrator.workflow.engine.completion_evidence import DecidedOn
 from orchestrator.workflow.engine.report_outcome_models import _ReadyReport, _ReportRefusal, _VerifiedReport
 from orchestrator.workflow.engine.report_record_values import RecordRefusal, report_text_refusal
 from orchestrator.workflow.engine.report_records import DELIVERED_REPORT, PENDING_REPORT
@@ -186,8 +187,10 @@ def retire(
     is decided on all of that reading: refused (EVIDENCE_MOVED) where the
     comment read afresh no longer reads as it -- a human's repair of the very
     record that proved the capture stale among them -- and landed only where
-    no field of it moves before the commit, so the caller decides again on a
-    fresh reading rather than discarding a capture on evidence that is gone.
+    the candidate its commit sends still spells that whole reading beside the
+    capture (`completion_evidence.DecidedOn`), a field it lacked and somebody
+    restored or added since included, so the caller decides again on a fresh
+    reading rather than discarding a capture on evidence that is gone.
     """
     commit = _commits.CompletionCommit(gh, issue, state, invocation)
     fresh = commit.fresh()
@@ -201,11 +204,13 @@ def retire(
     refused = _refusal(fresh, standing, invocation, reason, state)
     if refused is not None:
         return commit.refused(refused)
+    invalidated = reason is _records.RetirementReason.INVALIDATED
     return _lands(
         commit,
         fresh,
         _records.ResolvedCapture(invocation=invocation, stage=_records.CaptureStage.RETIRED, reason=reason),
-        decided_on=tuple(fresh.state_data) if reason is _records.RetirementReason.INVALIDATED else (),
+        DecidedOn.over(fresh) if invalidated else None,
+        decided_on=tuple(fresh.state_data) if invalidated else (),
     )
 
 
