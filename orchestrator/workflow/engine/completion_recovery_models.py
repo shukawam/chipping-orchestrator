@@ -15,7 +15,8 @@ owner acts on the world that was proved rather than on a second look.
 INVALID is a reading that PROVED the capture no longer answers what the
 issue now is: the work ended, the issue was moved to another road, the
 requirements or a record its handoff froze moved, or the branch, the checkout
-head, or the pull request it reported on is another one now -- or an auto
+head, or the pull request it reported on is another one now; the pull
+request, report debt, or adjudication its road answers is gone; or an auto
 rebase of that branch was begun and no recovery has ended it, so the branch is
 mid-rewrite and its recovery may reset or replace the commit reported on. Its
 output may not be published, so it is retired by a guarded invalidation that
@@ -24,9 +25,10 @@ keeps which invocation it was.
 UNCERTAIN is a reading nobody could take, or one the issue moved under while
 it was taken -- a comment, an issue, a thread, a checkout, or a pull request
 that would not read, a checkout nothing proves the issue's own, a record
-naming no branch live work may use, labels or controls that moved during the
-dispatch. Nothing proves the capture stale, so it is kept and the tick held
-for a later reading.
+naming no branch live work may use or claiming a road's record nobody can
+read, labels or controls that moved during the dispatch -- and a run whose
+usage was captured unaccounted with no receipt of it read back since. Nothing
+proves the capture stale, so it is kept and the tick held for a later reading.
 
 DAMAGED is a claim nothing here may act on or clear: a capture that will not
 read, a cycle identity nobody can name, or a capture of another record or of
@@ -84,6 +86,8 @@ class Reason(StrEnum):
     PULL_REQUEST_MOVED = "the pull request moved off the run's branch and heads"
     # INVALID: an auto rebase of the branch was begun and no recovery has ended it.
     ANCHORED = "an unfinished auto rebase of its branch stands beside it"
+    # INVALID: the pull request, report debt, or adjudication its road answers is gone.
+    PREREQUISITE_GONE = "the pull request, report debt, or adjudication its road answers is gone"
     # UNCERTAIN: the pinned comment would not read, or moved since the dispatch read it.
     RECORD_UNREAD = "the pinned comment could not be read as the one the dispatch read"
     # UNCERTAIN: the issue would not read, or its labels or controls moved during the dispatch.
@@ -96,6 +100,10 @@ class Reason(StrEnum):
     CHECKOUT_UNPROVEN = "the checkout the report is about is not proven the issue's own"
     # UNCERTAIN: the pull request the record names would not read.
     PULL_REQUEST_UNREAD = "the pull request could not be read"
+    # UNCERTAIN: a record its road answers is claimed in a shape nobody can read.
+    PREREQUISITE_UNREAD = "a record its road answers cannot be read"
+    # UNCERTAIN: its run's usage was captured unaccounted, and no receipt of it reads back.
+    ACCOUNTING_UNRESOLVED = "its run's usage accounting has not read back"
     # DAMAGED: the capture, or the cycle it is bound to, reads as nothing this build writes.
     DAMAGED = "the capture or the cycle identity cannot be read"
     # DAMAGED: the capture names another record, or a cycle the record has left.

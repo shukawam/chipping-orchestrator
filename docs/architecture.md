@@ -637,8 +637,10 @@ parks once on a record it may not act on
 ([`state-machine/delivery-stages.md`](state-machine/delivery-stages.md#the-rewritten-head-report-debt-every-dispatch))
 — a captured developer completion still pending, decided behind that debt and ahead of the reuse guard, from its
 read-back alone: handed, admitted and immutable, to the owner of the road it was taken on -- which no road has in this
-build, so the handler is held -- retired as invalidated where a reading proves it stale, held with nothing written
-where a reading fails or the claim is damaged, and waited through on a dependency hold, the `ready` decision, and an
+build, so the handler is held -- only while that road's pull request, debt, or adjudication stands and an unaccounted
+run's receipt has read back, retired as invalidated where a reading proves it stale, on that very reading, held with
+nothing written where a reading fails or the claim is damaged, and waited through on a dependency hold, the `ready`
+decision, and an
 unlabeled issue; the base refresh keeps its checkout where the run left it until then, beside an auto-rebase anchor
 too, where the capture is decided ahead of the anchor's hold and retired before that recovery may reset or push
 ([`state-machine/delivery-stages.md`](state-machine/delivery-stages.md#the-captured-completion-recovery-every-dispatch))

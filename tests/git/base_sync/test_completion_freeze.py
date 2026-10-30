@@ -8,9 +8,10 @@ may be the one a recovery needs -- keeps the commit its report is about where
 the run left it. The transfer that hands the report to the delivery hands the
 freeze to the delivery's own records in the same commit, and their settlement
 releases it; an invalidated capture holds nothing. Accounting alone never
-holds a checkout. Beside an auto-rebase anchor the capture is set aside for
-the anchor's own recovery, which finishes the rewrite already made and starts
-none: the selection asked again unanchored holds the branch for it.
+holds a checkout. Beside an auto-rebase anchor an unresolved capture holds the
+branch too, as the late claims do: that anchor's recovery resets or replaces
+the checkout whenever it cannot prove its attempt, so it waits until the
+dispatcher, ahead of the anchor's hold, has retired the capture.
 """
 from __future__ import annotations
 

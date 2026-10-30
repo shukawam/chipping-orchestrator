@@ -989,17 +989,24 @@ than a second source of truth: where the two disagree, the handler pages are aut
      developer_completion      ─► the CAPTURED-COMPLETION recovery, directly
        pending on the pinned       behind the rewrite-debt hold, from the
        comment                     capture's read-back alone: re-read the
-                                   issue, its controls, the road, the
-                                   requirements, the branch, the checkout,
-                                   and the pull request. APPLICABLE is handed,
-                                   admitted, to its road's owner -- none in
-                                   this build, so the handler is HELD; a proof
-                                   it is stale (ended, relabelled, a frozen
-                                   record, requirements, branch, checkout, or
-                                   pull request moved) RETIRES it invalidated,
-                                   owning the capture alone, and the handler
-                                   runs; a read nobody could take and a
-                                   damaged claim HOLD with nothing written;
+                                   issue, its controls, the road and the
+                                   pull request, debt, or adjudication it
+                                   stands on, the requirements, the branch,
+                                   the checkout, an unaccounted run's
+                                   receipt, and the pull request. APPLICABLE
+                                   is handed, admitted, to its road's owner
+                                   -- none in this build, so the handler is
+                                   HELD; a proof it is stale (ended,
+                                   relabelled, a frozen record,
+                                   requirements, branch, checkout, or pull
+                                   request moved, its road's pull request,
+                                   debt, or adjudication gone) RETIRES it
+                                   invalidated, owning the capture alone and
+                                   decided on the reading that proved it,
+                                   and the handler runs; a read nobody could
+                                   take, an unaccounted run's receipt not
+                                   read back, and a damaged claim HOLD with
+                                   nothing written;
                                    workflow:blocked, workflow:ready, and an
                                    unlabeled issue run as they would, the
                                    capture kept. Nothing is charged, parked,

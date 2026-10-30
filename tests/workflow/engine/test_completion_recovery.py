@@ -20,6 +20,7 @@ from orchestrator.git.worktrees.models import ProbeAnswer
 from orchestrator.workflow.engine import (
     completion_records as _records,
     completion_recovery_models as _models,
+    completion_routes as _routes,
 )
 from orchestrator.workflow.state import WorkflowLabel
 from tests.workflow.engine import completion_dispatch_support as _dispatch, completion_recovery_support as _support
@@ -36,6 +37,44 @@ _HANDLED = (_NUMBER,)
 _DONE = (str(WorkflowLabel.DONE),)
 
 _VALIDATING = Turn(labels=(str(WorkflowLabel.VALIDATING),))
+
+_ON_VALIDATING = WorkflowLabel.VALIDATING
+
+# A drift resume read on `validating`, a rewritten-head refresh, and a late revision.
+_DRIFT = _support.road(_routes.CompletionRoute.REQUIREMENTS_DRIFT, _ON_VALIDATING)
+_REFRESH = _support.road(_routes.CompletionRoute.REPORT_REFRESH, _ON_VALIDATING)
+_REVISION = _support.road(_routes.CompletionRoute.LATE_REVISION, WorkflowLabel.DECOMPOSING)
+
+_DEBT = "developer_report_rewrite_debt"
+
+_RECEIPTS = "issue_usage_receipts"
+
+_EARLIER = "0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f"
+
+
+def _debt_of(rewritten: str) -> MappingProxyType:
+    """The pinned edit recording the report debt a rewrite of the pull request onto `rewritten` left."""
+    owed = {"pr": _support.PR_NUMBER, "branch": _support.BRANCH, "previous_head": _EARLIER, "rewritten_head": rewritten}
+    return MappingProxyType({_DEBT: owed})
+
+
+# The capture's run read back as accounted after all, its receipt on the ledger.
+_RECEIPT = (_support.ORDINAL, _support.NONCE)
+_RECEIPTED = MappingProxyType({_RECEIPTS: {"floor": 0, "recent": [list(_RECEIPT)]}})
+
+# A capture whose run's usage checkpoint never confirmed.
+_UNACCOUNTED = MappingProxyType({"accounting": "unresolved"})
+
+# Each road whose records still stand, and the move that leaves them so: a
+# drift on a pull-request stage beside its pull request, a refresh beside the
+# debt of the head its run started on, and an unaccounted run read back since.
+_STANDING = MappingProxyType({
+    "drift beside its pull request": Case(Turn(), None, pull_request=True, label=_ON_VALIDATING, road=_DRIFT),
+    "refresh beside its debt": Case(
+        Turn(edits=_debt_of(_support.BEFORE)), None, pull_request=True, label=_ON_VALIDATING, road=_REFRESH,
+    ),
+    "accounting read back": Case(Turn(members=_UNACCOUNTED, edits=_RECEIPTED), None),
+})
 
 # Another current-layout branch than the one the issue's record pins.
 _OTHER_BRANCH = "orchestrator/chippingway__chipping-orchestrator/issue-1"
@@ -54,6 +93,20 @@ _STALE = MappingProxyType({
     "pull request pushed over": Case(
         Turn(pull_request=MappingProxyType({"sha": _support.ELSEWHERE})), _Reason.PULL_REQUEST_MOVED,
         pull_request=True,
+    ),
+    "pull request gone": Case(
+        Turn(edits=MappingProxyType({"pr_number": _support.DROPPED})), _Reason.PREREQUISITE_GONE,
+        pull_request=True, label=_ON_VALIDATING, road=_DRIFT,
+    ),
+    "refresh owed nothing": Case(
+        Turn(), _Reason.PREREQUISITE_GONE, pull_request=True, label=_ON_VALIDATING, road=_REFRESH,
+    ),
+    "refresh of another head": Case(
+        Turn(edits=_debt_of(_support.ELSEWHERE)), _Reason.PREREQUISITE_GONE,
+        pull_request=True, label=_ON_VALIDATING, road=_REFRESH,
+    ),
+    "revision with no adjudication": Case(
+        Turn(), _Reason.PREREQUISITE_GONE, label=WorkflowLabel.DECOMPOSING, road=_REVISION,
     ),
 })
 
@@ -74,6 +127,15 @@ _UNREAD = MappingProxyType({
     "checkout not its own": Case(Turn(identity=ProbeAnswer.REFUTED), _Reason.CHECKOUT_UNPROVEN),
     "head unread": Case(Turn(head=""), _Reason.CHECKOUT_UNPROVEN),
     "checkout elsewhere": Case(Turn(), _Reason.CHECKOUT_UNPROVEN, run=(("worktree", "/elsewhere/issue-2427"),)),
+    "refresh debt unreadable": Case(
+        Turn(edits=MappingProxyType({_DEBT: "owed"})), _Reason.PREREQUISITE_UNREAD,
+        pull_request=True, label=_ON_VALIDATING, road=_REFRESH,
+    ),
+    "accounting unresolved": Case(Turn(members=_UNACCOUNTED), _Reason.ACCOUNTING_UNRESOLVED),
+    "accounting beside a damaged counter": Case(
+        Turn(members=_UNACCOUNTED, edits=MappingProxyType({**_RECEIPTED, "issue_total_tokens": "many"})),
+        _Reason.ACCOUNTING_UNRESOLVED,
+    ),
 })
 
 # Each claim nothing may act on or clear: a capture that will not read, one
@@ -117,6 +179,18 @@ class ApplicableCaptureTest(unittest.TestCase):
                 self.assertEqual(seen.ran, () if stops else _HANDLED)
                 self.assertTrue(seen.untouched)
 
+    def test_its_road_standing_hands_it_on(self) -> None:
+        # Each road's own records still standing -- its pull request, the debt
+        # a refresh answers, and the receipt of an unaccounted run -- admit it.
+        for name, case in _STANDING.items():
+            with self.subTest(name):
+                world = _support.CapturedWorld(case.label, pull_request=case.pull_request)
+                captured = world.captured(case.road)
+
+                seen = _dispatch.observed(world, _dispatch.RoadOwner(), case.turn)
+
+                self.assertEqual([admitted.capture.invocation for admitted in seen.handed], [captured.invocation])
+
     def test_a_road_no_owner_takes_holds_it(self) -> None:
         # As in this build: nothing finishes the capture, so nothing may run
         # the work again over it -- every tick holds, and none writes.
@@ -144,8 +218,8 @@ class StaleCaptureTest(unittest.TestCase):
     def test_each_proof_of_staleness_retires_it(self) -> None:
         for name, case in _STALE.items():
             with self.subTest(name):
-                world = _support.CapturedWorld(pull_request=case.pull_request)
-                captured = world.captured(**dict(case.run))
+                world = _support.CapturedWorld(case.label, pull_request=case.pull_request)
+                captured = world.captured(case.road, **dict(case.run))
 
                 seen = _dispatch.observed(world, _dispatch.RoadOwner(), case.turn)
 
@@ -201,8 +275,8 @@ class UndecidedCaptureTest(unittest.TestCase):
 
     def _held(self, case: Case, standing: _Standing) -> None:
         """`case`'s move holds the dispatch under `standing`, with nothing handed on, run, or written."""
-        world = _support.CapturedWorld(pull_request=case.pull_request)
-        world.captured(**dict(case.run))
+        world = _support.CapturedWorld(case.label, pull_request=case.pull_request)
+        world.captured(case.road, **dict(case.run))
 
         seen = _dispatch.observed(world, _dispatch.RoadOwner(), case.turn)
 

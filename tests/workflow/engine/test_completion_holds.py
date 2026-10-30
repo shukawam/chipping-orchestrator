@@ -42,6 +42,10 @@ _ROUND_AT_LAUNCH = 3
 
 _ROUND_MOVED = 4
 
+# The pinned readings a dispatch takes up to its retirement's own: the
+# dispatcher's, the capture's read-back, and the retirement's.
+_RETIREMENT_READING = 3
+
 # The holds a capture waits through, by the labels the issue wears, and whether a stage handler runs there.
 _WAITS = (
     ((str(WorkflowLabel.BLOCKED),), True),
@@ -139,6 +143,26 @@ class FrozenHandoffTest(unittest.TestCase):
         self.assertEqual(retired.invocation, captured.invocation)
         self.assertEqual((seen.ran, seen.handed), ((_NUMBER,), ()))
         self.assertEqual(seen.after[_FROZEN_RECORD], _ROUND_MOVED, "the moved record is the other road's")
+
+    def test_a_repair_behind_the_proof_keeps_it(self) -> None:
+        # The record that proved the capture stale is put back by hand after
+        # the dispatch read it and before the retirement's own reading: the
+        # retirement is decided on the reading the proof was taken over, so it
+        # is refused, nothing is written or run, and the next dispatch -- on
+        # the repaired record -- hands the capture on.
+        world, captured = _frozen_world()
+        world.hand_edit(**{_FROZEN_RECORD: _ROUND_MOVED})
+        repaired = _support.RepairedBehind(world, _RETIREMENT_READING, **{_FROZEN_RECORD: _ROUND_AT_LAUNCH})
+
+        with patch.object(world.github, "read_pinned_state", side_effect=repaired):
+            held = _dispatch.observed(world, _dispatch.RoadOwner())
+
+        self.assertEqual(_support.read_capture(held.after), captured)
+        self.assertEqual(held.writes, 0, "nothing is written over the capture")
+        self.assertEqual((held.ran, held.handed), ((), ()))
+        self.assertIn("EVIDENCE_MOVED", held.said)
+        handed = _dispatch.observed(world, _dispatch.RoadOwner()).handed
+        self.assertEqual([admitted.capture for admitted in handed], [captured])
 
     def test_an_unmoved_frozen_record_hands_it_on(self) -> None:
         world, captured = _frozen_world()

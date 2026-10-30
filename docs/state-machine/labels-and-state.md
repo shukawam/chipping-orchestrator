@@ -2013,9 +2013,12 @@ The keys that matter for the state machine fall into a few groups:
   A pending capture is decided ahead of every stage handler, behind the reconciliations, by the
   [captured-completion recovery](delivery-stages.md#the-captured-completion-recovery-every-dispatch), from its
   read-back alone and never from a log, analytics, a native session, a trajectory, or a host record: applicable, it
-  is handed, admitted, to the owner of its road, which no road has in this build, so the stage is held; stale, it is
-  retired `invalidated` by a guarded commit owning the capture alone, its invocation kept; uncertain or damaged, the
-  stage is held with nothing written. Beside an auto-rebase anchor it is decided ahead of the anchor's hold and
+  is handed, admitted, to the owner of its road, which no road has in this build, so the stage is held; stale --
+  its road's pull request, report debt, or adjudication gone among the proofs -- it is retired `invalidated` by a
+  guarded commit owning the capture alone, its invocation kept, and decided on the reading the proof was taken over,
+  so a comment that moved since refuses it; uncertain or damaged, the stage is held with nothing written, and so is a
+  capture whose run's usage was captured `unresolved` until that run's receipt reads back on the ledger beside
+  readable counters. Beside an auto-rebase anchor it is decided ahead of the anchor's hold and
   retired, since no road hands a report on over a rewrite no recovery finished. Until it is resolved it keeps the
   issue's checkout out of the base refresh, beside an anchor too ([Base refresh](#base-refresh)), and none of it
   charges a run, clears a park, or grants an invocation.

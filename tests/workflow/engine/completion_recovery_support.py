@@ -49,8 +49,9 @@ RUNS_USED = 3
 COMMAND = "claude --model claude-opus-5-5"
 PROMPT = "abababababababababababababababababababababababababababababababab"
 
-_ORDINAL = 3
-_NONCE = "00000000000000a3"
+# The charge the captured run was started under, as its invocation names it.
+ORDINAL = 3
+NONCE = "00000000000000a3"
 
 # What the run returned: a completed READY report.
 _READY = "Done.\n\nREPORT: READY\nImplemented it; the focused checks pass.\nREPORT: END"
@@ -108,8 +109,8 @@ def _handoff(github: FakeGitHubClient, issue, taken_on: tuple) -> _records.Compl
 def _returned(state, issue_number: int) -> AgentResult:
     """A completed READY return, from a process charged on the comment `state` was read from."""
     invocation = AgentInvocation(
-        repo=state.repo_slug, issue=issue_number, comment=state.comment_id, cycle=0, ordinal=_ORDINAL,
-        nonce=_NONCE,
+        repo=state.repo_slug, issue=issue_number, comment=state.comment_id, cycle=0, ordinal=ORDINAL,
+        nonce=NONCE,
     )
     return AgentResult(
         session_id="dev-sess", last_message=_READY, exit_code=0, timed_out=False, stdout="", stderr="",
@@ -156,3 +157,25 @@ class CapturedWorld:
         seams.enter_context(patch.object(_evidence, "_checkout_identity", MagicMock(return_value=self.identity)))
         seams.enter_context(patch.object(_probes, "_head_sha", MagicMock(return_value=self.head)))
         return seams
+
+
+class RepairedBehind:
+    """A pinned read that lands somebody's hand edit of `fields` just before its `reading`th answer, once.
+
+    Every answer before it is the comment as it stood, so whatever the
+    dispatch decided on them is decided on a record the edit then moves.
+    """
+
+    def __init__(self, world: CapturedWorld, reading: int, **fields) -> None:
+        self._world = world
+        self._reader = world.github.read_pinned_state
+        self._reading = reading
+        self._fields = fields
+        self._answered = 0
+
+    def __call__(self, issue):
+        """The reading, the edit landed first where this is the one it lands behind."""
+        self._answered += 1
+        if self._answered == self._reading:
+            self._world.hand_edit(**self._fields)
+        return self._reader(issue)

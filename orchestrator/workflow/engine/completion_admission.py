@@ -24,7 +24,10 @@ the next one to read. An auto-rebase anchor standing beside the capture is
 asked next: the branch is mid-rewrite, and the anchor's recovery may reset or
 replace the commit the report is about, so the capture is retired before that
 recovery runs (`dispatch_guards._anchor_holds_the_tick` asks this ahead of
-the anchor's hold). Then the road. Work that has ended -- the issue closed,
+the anchor's hold). Then the road, and the records it stands on: the pull
+request a pull-request stage's report is owed to, the debt a rewritten-head
+refresh answers, the adjudication a late revision answers
+(`completion_prerequisites`). Work that has ended -- the issue closed,
 or labelled `done` or `rejected` -- and an issue moved onto any other road
 than the one the capture reported on are past its output, and so is a
 handoff one of whose frozen records another road has moved since
@@ -37,8 +40,10 @@ The requirements are read off the issue as a developer prompt reads them
 (`prompt_context._delivered_thread`), so the fingerprint is comparable with
 the one the run was handed; an edit since -- the body, the title, or human
 guidance on the thread -- leaves the report about requirements the issue no
-longer has. Last, the branch, the checkout, and the pull request it reported
-on (`completion_sources`).
+longer has. Then the branch and the checkout it reported on
+(`completion_sources`); then, for a run whose usage was captured unaccounted,
+the receipt of it read back beside readable counters, without which the
+capture is held; and last the pull request.
 
 Nothing here writes, charges a run, clears a park, or grants an invocation.
 """
@@ -57,6 +62,7 @@ from orchestrator.github.pinned_state import PinnedState
 from orchestrator.workflow.engine import (
     completion_checkpoint as _checkpoint,
     completion_commits as _commits,
+    completion_prerequisites as _prerequisites,
     completion_records as _records,
     completion_recovery_models as _models,
     completion_sources as _sources,
@@ -119,8 +125,12 @@ def decided(
     refused = (
         _anchor_refusal(state)
         or _road_refusal(fresh, label, state, capture)
-        or _requirements_refusal(gh, fresh, state, capture)
+        or _prerequisites.road_refusal(state, capture)
+    )
+    refused = refused or (
+        _requirements_refusal(gh, fresh, state, capture)
         or _sources.checkout_refusal(spec, issue.number, state, capture)
+        or _prerequisites.accounting_refusal(state, capture)
     )
     if refused is not None:
         return refused

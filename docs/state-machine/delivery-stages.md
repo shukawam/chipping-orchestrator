@@ -2000,11 +2000,15 @@ and handed off -- and this is what it guarantees and what stops it.
 - **Reads** (`workflow/engine/completion_admission.py`, `completion_sources.py`), the cheapest first: the capture
   read back afresh through its own checkpoint, which admits the comment and binds it to the invocation's repository,
   issue, comment, and cycle -- the only thing the capture is read from; the issue fetched again for its labels,
-  controls, and state; the road; the requirements, fingerprinted as a developer prompt is handed them; the branch
-  the live resolver names; the checkout, proven the issue's own at its own path and read for its head; and the
-  recorded pull request, which has to be open, on the run's branch in this repository, and standing on the head the
-  run started on or the one it reported on -- a reading missing its head's branch, commit, or repository is no
-  reading.
+  controls, and state; the road, and the records it stands on (`completion_prerequisites.py`): the pull request a
+  report under `validating`, `in_review`, `fixing`, or `resolving_conflict` is owed to, the rewritten-head debt a
+  report refresh answers, naming the head its run started on or reported on, and the live adjudication a late
+  revision answers; the requirements, fingerprinted as a developer prompt is handed them; the branch the live
+  resolver names; the checkout, proven the issue's own at its own path and read for its head; for a run captured
+  with its usage unaccounted, that run's receipt read back on the ledger beside counters its writers would write;
+  and the recorded pull request, which has to be open, on the run's branch in this repository, and standing on the
+  head the run started on or the one it reported on -- a reading missing its head's branch, commit, or repository
+  is no reading.
 - **Hands on** an applicable capture, admitted and immutable (`AdmittedCompletion`: the capture, the issue read
   afresh, the label, the dispatcher's reading, the pull request's head), to the owner of the road it was taken on
   (`completion_recovery.ROUTE_OWNERS`), which finishes it through the existing report recording, code publication,
@@ -2014,24 +2018,29 @@ and handed off -- and this is what it guarantees and what stops it.
   approval, or docs pass.
 - **Retires** a capture a reading proved stale -- an auto rebase of its branch begun and not recovered, the issue
   closed or labelled `done` or `rejected`, moved onto any other road than the one it reported on, a record its
-  handoff froze moved, the requirements edited, the record
-  pinning another branch, the checkout moved off the commit the report is about, the pull request merged, closed,
-  replaced, or pushed over -- through `completion_checkpoint.retire` as `invalidated`: a guarded commit owning the
-  capture alone and keeping its invocation, so nothing of it is published and a later capture of it is refused. The
-  stage then runs as it would without one; a retirement refused or never confirmed holds the tick, and a later one
-  reads what landed.
+  handoff froze moved, the pull request, debt, or adjudication its road answers gone, the requirements edited, the
+  record pinning another branch, the checkout moved off the commit the report is about, the pull request merged,
+  closed, replaced, or pushed over -- through `completion_checkpoint.retire` as `invalidated`: a guarded commit
+  owning the capture alone and keeping its invocation, so nothing of it is published and a later capture of it is
+  refused. It is decided on the reading the proof was taken over: a comment that no longer reads as that reading --
+  a human's repair of the very record that proved it stale among them -- refuses it, and every field of it is held
+  unmoved through the commit. The stage then runs as it would without one; a retirement refused or never confirmed
+  holds the tick, and a later one decides afresh or reads what landed.
 - **Holds**, with nothing written, a capture nothing proves stale: a comment, issue, thread, or pull request that
   would not read, controls or a label that moved during the dispatch, a record naming no branch live work may use, a
-  checkout missing, unreadable, at another path, or not proven the issue's own -- nothing here adopts, resets,
-  recreates, or deletes one -- and every damaged claim: a capture or cycle identity nobody can read, or a capture of
-  another comment or of a cycle the record has left, which only a human's repair or removal of the field ends. A
-  cancelled cycle never reaches here, and a restart's projection drops the capture.
+  report debt its road answers claimed in a shape nobody can read, a checkout missing, unreadable, at another path,
+  or not proven the issue's own -- nothing here adopts, resets, recreates, or deletes one -- a run captured with its
+  usage unaccounted whose receipt has not read back, since an accounting checkpoint that neither landed nor read back
+  permits that run's accounting alone, and every damaged claim: a capture or cycle identity nobody can read, or a
+  capture of another comment or of a cycle the record has left, which only a human's repair or removal of the field
+  ends. A cancelled cycle never reaches here, and a restart's projection drops the capture.
 - **Waits through** a dependency hold (`workflow:blocked`), the `ready` decision that answers one, and an issue a
   human took the workflow label off: each runs as it would with no capture, and nothing releases, re-baselines,
   hands on, or retires it there.
 - **Charges nothing**: the spent run ledger's hold is asked ahead of this, so a run-limit park holds the capture with
-  it; nothing here reserves a launch, clears a park, grants a run, or settles the capture's accounting, which stands
-  or falls with the run's own usage checkpoint.
+  it; nothing here reserves a launch, clears a park, grants a run, or accounts the run again -- the capture keeps no
+  usage to account, so its accounting stands or falls with the run's own usage checkpoint, and a capture whose
+  checkpoint never read back stays held.
 - **Why it sits here**: behind the anchor readings, the late reconciliation, and the report and evidence
   transactions, so a push, report, or evidence the issue already owes settles first and the capture is decided on
   the world they leave; ahead of the reuse guard and the handler, whose unreported-checkout recovery, drift resume,

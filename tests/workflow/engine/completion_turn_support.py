@@ -18,6 +18,7 @@ from types import MappingProxyType
 from unittest.mock import patch
 
 from orchestrator.git.worktrees.models import ProbeAnswer
+from orchestrator.workflow.state import WorkflowLabel
 from tests.support.github.models import FakeComment, FakeLabel, FakeUser
 from tests.workflow.engine import completion_recovery_support as _support
 
@@ -62,7 +63,9 @@ class Case:
     """One case of a table: the move, what the dispatch says it found, and the world it is made on.
 
     `run` overrides the captured run, as `(member, value)` pairs; `handled`
-    is whether the issue's stage handler runs behind the decision.
+    is whether the issue's stage handler runs behind the decision; `label` is
+    the stage the issue is on and `road` the one the capture was taken on
+    (`road()`), the first implementation's where None.
     """
 
     turn: Turn
@@ -70,6 +73,8 @@ class Case:
     pull_request: bool = False
     run: tuple = ()
     handled: bool = True
+    label: WorkflowLabel = WorkflowLabel.IMPLEMENTING
+    road: tuple | None = None
 
 
 def turned(world: _support.CapturedWorld, turn: Turn) -> contextlib.AbstractContextManager:

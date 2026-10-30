@@ -25,8 +25,10 @@ nothing, infers no review, verification, approval, or documentation pass, and
 the owner says whether the tick carries on. A road no owner takes yet holds
 the tick, so no handler re-runs paid work. An INVALID capture is retired by a
 guarded invalidation (`completion_checkpoint.retire`), which keeps which
-invocation it was, owns nothing but the capture, and lets the tick carry on
-as it would with no capture; a retirement that did not land holds the tick
+invocation it was, owns nothing but the capture, is decided on the reading
+the proof was taken over, and lets the tick carry on as it would with no
+capture; a retirement that did not land -- refused because the comment moved
+since that reading, a human's repair of the proof included -- holds the tick
 for a later reading. UNCERTAIN and DAMAGED captures hold the tick with
 nothing written. A WAITING one stands down with nothing written, so a
 dependency walk, the `ready` decision, or a human's unlabeled issue is left

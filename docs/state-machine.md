@@ -266,8 +266,10 @@ replay publishes only through an authorized `single`'s settlement, leased to the
 records the report debt its push leaves and puts the reviewer's spent rounds back, as the rewrite finish does; an
 unchanged contribution still carries the verdict over on the transfer permit. The `question` and `discussion` labels —
 and the parks and in-flight discussion records that outlive them — skip both paths. Beside an interrupted auto rebase's
-anchor, of the records and parks that freeze a branch only the late size-gate claims keep the refresh away, so its
-recovery answers the anchor ahead of any stage handler. The failure modes, their durable `park_reason` tokens, and the
+anchor, of the records and parks that freeze a branch only the late size-gate claims and a captured developer
+completion nothing has resolved keep the refresh away, so its recovery answers the anchor ahead of any stage handler
+once the dispatcher, ahead of the anchor's hold, has retired such a capture. The failure modes, their durable
+`park_reason` tokens, and the
 refresh-owned retry are in
 [`state-machine/labels-and-state.md#base-refresh`](state-machine/labels-and-state.md#base-refresh).
 

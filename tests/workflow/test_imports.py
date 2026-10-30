@@ -80,6 +80,7 @@ _ENGINE_OWNERS = (
     "completion_checkpoint",
     "completion_recovery_models",
     "completion_sources",
+    "completion_prerequisites",
     "completion_admission",
     "completion_recovery",
     "completion_verdicts",

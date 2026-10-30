@@ -1193,7 +1193,9 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             handoff whose report has not settled, and for a report its reading or the comment's
                             escaped room refuses -- leaving the run's usage checkpoint to its own; its read-back; and
                             its retirement, a pending one only as INVALIDATED and a handoff only once its report has
-                            settled or been superseded.
+                            settled or been superseded, an INVALIDATED one decided on the whole reading its caller
+                            holds -- refused where the comment no longer reads as it, and every field held unmoved
+                            through the commit.
                             Dormant: no stage captures a completion yet
     completion_recovery_models.py the five answers one reading of a pending capture gives -- applicable, invalid,
                             uncertain, damaged, and waiting -- the reason each is said with, and the immutable
@@ -1203,10 +1205,18 @@ workflow/                   publishes labels, transition guards, and the lazy pe
     completion_admission.py one reading of a pending capture, the cheapest first and writing nothing: its read-back
                             through the checkpoint, the only source it is read from; the issue fetched again for
                             its controls, label, and state; an auto-rebase anchor beside it, which retires it; the
-                            road it reported on and the records its handoff froze; the requirements, fingerprinted
-                            as a developer prompt is handed them; and the
-                            sources behind them. A dependency hold, the `ready` decision, and an unlabeled issue
-                            are waited through
+                            road it reported on, the records its handoff froze, and what that road stands on
+                            (`completion_prerequisites.py`); the requirements, fingerprinted as a developer prompt
+                            is handed them; and the sources behind them, an unaccounted run's receipt read before
+                            the pull request. A dependency hold, the `ready` decision, and an unlabeled issue are
+                            waited through
+    completion_prerequisites.py what a pending capture's road still has to stand on -- the pull request a report under
+                            a pull-request stage is owed to, the rewritten-head debt a report refresh answers naming
+                            the head its run started on or reported on, the live adjudication a late revision
+                            answers (`stages/decomposition/late_relabel.py`, resolved when called) -- gone proving
+                            the capture stale and unreadable holding it; and, for a run captured with its usage
+                            unaccounted, the receipt of it read back beside counters its writers would write,
+                            without which the capture is held
     completion_sources.py   whether the branch the live resolver names, the issue's own checkout at its own path and
                             the commit it stands on, and the recorded pull request -- open, on the run's branch in
                             this repository, at the head the run started on or reported on -- are still the ones a
