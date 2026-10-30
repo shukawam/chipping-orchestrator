@@ -17,7 +17,10 @@ settled, dropped by the binding and settlement that publish it, an
 Antigravity docs launch, dropped by the write that records its outcome, a
 docs pass's receipt, dropped by the completion that hands the pass on, and
 that completion's run of its final head, spent by the settlement that makes it
-current. Three do not, and they are the reason this is an owner rather than a tuple. An exemption and
+current, and a developer completion a run captured and nothing has taken over
+yet, spent by the transfer that hands its report to the delivery -- whose own
+records hold the branch from that commit on -- or by the guarded invalidation
+that retires it. Three do not, and they are the reason this is an owner rather than a tuple. An exemption and
 a publication record are invalidated by the head moving off them rather than
 by any write, so what answers for those is the checkout itself -- and, since
 neither is ever dropped, how long the STAGE that reads them keeps the issue,
@@ -30,6 +33,7 @@ answered by the reason the park carries.
 from __future__ import annotations
 
 from pathlib import Path
+from types import MappingProxyType
 
 from orchestrator.git.base_sync.state import _PENDING_PUSH_SHA, log
 from orchestrator.git.verification import probes as _probes
@@ -209,6 +213,43 @@ _PENDING_EVIDENCE = "verification_evidence_pending"
 _RECEIPT = "receipt"
 
 
+# A developer completion a run captured before its return could be discarded
+# -- by a live pause, a lost tick -- and that no transaction owns yet. Its
+# report is about one commit, the one the checkout stood on when the run
+# returned, and the recovery the dispatcher asks ahead of every handler
+# hands it on only while the checkout still stands there. The refresh runs
+# before that recovery on every tick, the first unpaused one above all, so a
+# rebase here would move the checkout off that commit before anything had
+# decided about it, and the paid report could only be discarded as stale.
+#
+# It ends by being SPENT, like the report records above, and it is those
+# records that pick the freeze up: the transfer that hands the report to the
+# delivery rewrites the capture as handed off in the very commit that records
+# the delivery, which holds the branch until its binding and settlement have
+# run. A capture a guarded invalidation retired holds nothing either. So a
+# capture holds unless it reads as one of those two resolved stages, spelled
+# whole -- `null`, a stage nobody writes, a key too many or too few: a capture
+# nobody can read is one whose recovery may still need the commit, and its
+# damage is no release. The usage receipts beside it are accounting alone and
+# hold nothing.
+#
+# The members are spelled here the way every pinned key this package reads
+# is: what this pins down is how the refresh reads a record a stage it never
+# calls into writes.
+_COMPLETION = "developer_completion"
+
+_COMPLETION_STAGE = "stage"
+
+_INVOCATION_MEMBERS = ("repo", "issue", "comment", "cycle", "ordinal", "nonce")
+
+_RESOLVED_COMPLETIONS = MappingProxyType({
+    "handed_off": frozenset((
+        _COMPLETION_STAGE, *_INVOCATION_MEMBERS, "receipt", "revision", "branch", "source",
+    )),
+    "retired": frozenset((_COMPLETION_STAGE, *_INVOCATION_MEMBERS, "reason")),
+})
+
+
 # The terms a squash-on-approval records before it destroys the evidence of
 # itself: the head it is collapsing, the base it is collapsing over, and how
 # many commits go in. They are the sharpest freeze here, because what they
@@ -363,17 +404,33 @@ def _held_records(state: _pinned_state.PinnedState) -> tuple[str, ...]:
     whether one is outstanding, so a record they cannot read still holds; so
     is a docs launch whose outcome nothing has recorded yet, and a docs pass's
     receipt no completion has consumed. A completion whose run is still owed
-    holds too (`_docs_verification_owed`).
+    holds too (`_docs_verification_owed`), and so does a captured developer
+    completion nothing has resolved (`_completion_unresolved`).
     """
     held = tuple(key for key in _FROZEN_BY_KEYS if state.get(key))
     held += _late_claims(state)
     held += tuple(
         key for key in _REPORT_IN_FLIGHT_KEYS + _LAUNCH_IN_FLIGHT_KEYS if state.get(key) is not None
     )
-    held += _docs_verification_owed(state)
+    held += _docs_verification_owed(state) + _completion_unresolved(state)
     return held + tuple(
         key for key in _LATE_COLLAPSE_KEYS if key in state.state_data
     )
+
+
+def _completion_unresolved(state: _pinned_state.PinnedState) -> tuple[str, ...]:
+    """The captured completion, where the comment carries one that is not spelled as resolved; else nothing.
+
+    Read for the key being there at all, as the capture's own state reader
+    tells a claim from an absence, and released only by a handed-off or
+    retired capture carrying exactly the members that stage spells.
+    """
+    if _COMPLETION not in state.state_data:
+        return ()
+    captured = state.state_data[_COMPLETION]
+    stage = captured.get(_COMPLETION_STAGE) if isinstance(captured, dict) else None
+    spelled = _RESOLVED_COMPLETIONS.get(stage) if isinstance(stage, str) else None
+    return () if spelled is not None and frozenset(captured) == spelled else (_COMPLETION,)
 
 
 def _docs_verification_owed(state: _pinned_state.PinnedState) -> tuple[str, ...]:

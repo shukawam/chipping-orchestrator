@@ -14,7 +14,10 @@ behind, and last the one gate that does pay for a read, so an issue some
 cheaper answer already froze never pays for it.
 
 Which records freeze a branch, and what ends each freeze, is the `frozen`
-owner's. What is added here is where in that order each is asked and -- for
+owner's -- a captured developer completion nothing has resolved among them,
+which keeps the commit its report is about where the run left it until the
+dispatcher's recovery, behind this refresh on every tick, has decided about
+it. What is added here is where in that order each is asked and -- for
 the two no write ever ends -- whether the stage that still has to act on the
 commit holds the issue.
 
@@ -259,6 +262,17 @@ def _state_holds_the_branch(
     anchor down and lets the tick go on is no rebase of that attempt's any
     more, so the coordinator asks this whole selection again, unanchored,
     before the rebase behind it (`workflow/engine/base_rewrite.py`).
+
+    A captured developer completion nothing has resolved is one of those
+    records. Its recovery is the dispatcher's, behind the anchor's own hold,
+    so it is set aside here as a report in flight is, and the two never wait
+    on each other: the anchor's recovery finishes or undoes the rewrite that
+    already ran, and starts none over the capture -- the selection asked
+    again unanchored holds the branch for it, the first unpaused tick's
+    included -- while the capture's recovery reads the checkout as that
+    recovery left it. A capture is taken only by a handler the anchor's hold
+    keeps back, and a capture holds every walk that would pin an anchor, so
+    the two meet only on a record somebody edited.
     """
     anchored = bool(state.get(_PENDING_PUSH_SHA))
     held = (

@@ -55,7 +55,9 @@ refused, so the only copy of a report is never dropped on the strength of a
 handoff nobody confirmed. Retirement keeps the invocation, which is what
 refuses a later capture of it.
 
-These are dormant primitives: no stage captures a completion yet.
+These are dormant primitives: no stage captures a completion yet. The
+dispatcher's recovery (`completion_recovery`) reads a pending capture through
+`read_back` alone and ends one its readings proved stale through `retire`.
 """
 from __future__ import annotations
 

@@ -1402,7 +1402,9 @@ because there it is the claim that this stage has already rerouted rather than a
   settlement, still fit the comment with every terminator escaped, and the transfer, the binding, and the settlement
   are each measured that way again over the comment they land on. Nothing captures a
   completion yet: these are the primitives the held-return recovery builds on, and this reconciliation reads no
-  capture of its own.
+  capture of its own. A pending capture is decided behind it, by the
+  [captured-completion recovery](#the-captured-completion-recovery-every-dispatch), and from the transfer on the
+  delivery and this transaction hold the checkout out of the base refresh the capture held it out of before.
 
 ## The verification-evidence transaction (every dispatch)
 - **Trigger**: `_record_stops_the_tick` on any issue whose pinned comment carries `verification_evidence_pending`,
@@ -1985,6 +1987,55 @@ and handed off -- and this is what it guarantees and what stops it.
   the refresh told the approved commit was documented, in a final docs pass, into the head the rewrite replaced;
   DEFER and HOLD read as the squash's do. So a base rebase or conflict resolution of a completed docs commit is
   refreshed and reviewed like any other rewrite.
+
+## The captured-completion recovery (every dispatch)
+- **Trigger**: `capture_holds_the_tick` (`workflow/engine/completion_recovery.py`), asked by `_record_stops_the_tick`
+  directly behind the rewritten-head report debt and ahead of the reuse guard, by the adjudication's own road behind
+  its reconciliation, and by the in-tick handoff into `workflow:implementing` a `ready` decision or a decomposing
+  route makes, before that handler runs. An issue carrying no `developer_completion`, or a handed-off or retired
+  one, passes through reading nothing, and so does one under an operator's `paused` or `backlog` on the one road a
+  held issue reaches the guards -- a close somebody observed. The capture is described under
+  [pinned state](labels-and-state.md#pinned-state); no stage captures one yet.
+- **Reads** (`workflow/engine/completion_admission.py`, `completion_sources.py`), the cheapest first: the capture
+  read back afresh through its own checkpoint, which admits the comment and binds it to the invocation's repository,
+  issue, comment, and cycle -- the only thing the capture is read from; the issue fetched again for its labels,
+  controls, and state; the road; the requirements, fingerprinted as a developer prompt is handed them; the branch
+  the live resolver names; the checkout, proven the issue's own at its own path and read for its head; and the
+  recorded pull request, which has to be open, on the run's branch in this repository, and standing on the head the
+  run started on or the one it reported on.
+- **Hands on** an applicable capture, admitted and immutable (`AdmittedCompletion`: the capture, the issue read
+  afresh, the label, the dispatcher's reading, the pull request's head), to the owner of the road it was taken on
+  (`completion_recovery.ROUTE_OWNERS`), which finishes it through the existing report recording, code publication,
+  binding, and settlement, with every ownership, size, lease, and exact-revision gate those keep; the owner says
+  whether the tick stops. No road names an owner in this build, so an applicable capture holds the stage, every tick,
+  rather than letting it run the paid work again. This owner publishes nothing and infers no review, verification,
+  approval, or docs pass.
+- **Retires** a capture a reading proved stale -- the issue closed or labelled `done` or `rejected`, moved onto any
+  other road than the one it reported on, a record its handoff froze moved, the requirements edited, the record
+  pinning another branch, the checkout moved off the commit the report is about, the pull request merged, closed,
+  replaced, or pushed over -- through `completion_checkpoint.retire` as `invalidated`: a guarded commit owning the
+  capture alone and keeping its invocation, so nothing of it is published and a later capture of it is refused. The
+  stage then runs as it would without one; a retirement refused or never confirmed holds the tick, and a later one
+  reads what landed.
+- **Holds**, with nothing written, a capture nothing proves stale: a comment, issue, thread, or pull request that
+  would not read, controls or a label that moved during the dispatch, a record naming no branch live work may use, a
+  checkout missing, unreadable, at another path, or not proven the issue's own -- nothing here adopts, resets,
+  recreates, or deletes one -- and every damaged claim: a capture or cycle identity nobody can read, or a capture of
+  another comment or of a cycle the record has left, which only a human's repair or removal of the field ends. A
+  cancelled cycle never reaches here, and a restart's projection drops the capture.
+- **Waits through** a dependency hold (`workflow:blocked`), the `ready` decision that answers one, and an issue a
+  human took the workflow label off: each runs as it would with no capture, and nothing releases, re-baselines,
+  hands on, or retires it there.
+- **Charges nothing**: the spent run ledger's hold is asked ahead of this, so a run-limit park holds the capture with
+  it; nothing here reserves a launch, clears a park, grants a run, or settles the capture's accounting, which stands
+  or falls with the run's own usage checkpoint.
+- **Why it sits here**: behind the anchor readings, the late reconciliation, and the report and evidence
+  transactions, so a push, report, or evidence the issue already owes settles first and the capture is decided on
+  the world they leave; ahead of the reuse guard and the handler, whose unreported-checkout recovery, drift resume,
+  launch, or review resume would lose or repeat the captured work. The base refresh ahead of every dispatch keeps
+  the capture's checkout where the run left it until this decides
+  ([Base refresh](labels-and-state.md#base-refresh)); beside an auto-rebase anchor the anchor's own recovery goes first
+  and this is decided on the checkout it leaves.
 
 ## The seed hold (every dispatch, ahead of the reuse guard)
 - **Trigger**: `_pinned_state_refuses` (`workflow/engine/dispatch_guards.py`) on any issue this orchestrator opened

@@ -477,7 +477,10 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             The report debt a rewritten pull-request head leaves is asked directly behind that, and
                             holds: any claim, readable or not, keeps the `documenting` and `in_review` handlers off,
                             while `validating` runs, since its report hold is what pays the debt; a final docs pass
-                            records none, so every claim on `workflow:documenting` is held alike. Directly behind
+                            records none, so every claim on `workflow:documenting` is held alike. A captured
+                            developer completion is decided directly behind that debt, and behind the adjudication's
+                            reconciliation on its own road, ahead of the reuse guard and the handler
+                            (`completion_recovery.py`). Directly behind
                             the agent-run-limit hold, and ahead of the adjudication's step aside, every reconciliation,
                             and the reuse guard, `stages/decomposition/split_seeds.py` holds an ordinary split's child
                             whose seed is not the one the receipt in its body owes it -- no `parent_number` naming that
@@ -1191,6 +1194,30 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             its retirement, a pending one only as INVALIDATED and a handoff only once its report has
                             settled or been superseded.
                             Dormant: no stage captures a completion yet
+    completion_recovery_models.py the five answers one reading of a pending capture gives -- applicable, invalid,
+                            uncertain, damaged, and waiting -- the reason each is said with, and the immutable
+                            `AdmittedCompletion` an applicable capture is handed to its road's owner as: the
+                            capture, the issue read afresh, the label, the dispatcher's reading, and the pull
+                            request's head, and no charge, grant, or park
+    completion_admission.py one reading of a pending capture, the cheapest first and writing nothing: its read-back
+                            through the checkpoint, the only source it is read from; the issue fetched again for
+                            its controls, label, and state; the road it reported on and the records its handoff
+                            froze; the requirements, fingerprinted as a developer prompt is handed them; and the
+                            sources behind them. A dependency hold, the `ready` decision, and an unlabeled issue
+                            are waited through
+    completion_sources.py   whether the branch the live resolver names, the issue's own checkout at its own path and
+                            the commit it stands on, and the recorded pull request -- open, on the run's branch in
+                            this repository, at the head the run started on or reported on -- are still the ones a
+                            pending capture reported on; a reading that fails, or a checkout nothing proves the
+                            issue's own, holds the capture rather than proving it stale
+    completion_recovery.py  the dispatch guard that decides a pending capture ahead of every stage handler: an
+                            applicable one handed to its road's owner (`ROUTE_OWNERS`, resolved when called -- none
+                            in this build, so the stage is held), a stale one retired `invalidated` by the
+                            checkpoint's guarded retirement, an uncertain or damaged one held with nothing written,
+                            and a hold it waits through, or an operator's hard-skip on the observed-close road,
+                            stood down for. `dispatch_guards.py` asks it behind the rewritten-head report debt and
+                            on the adjudication's road, and `stages/decomposition/handoff.py` and
+                            `ready_handoff.py` before the implementing handler they run in-tick
     report_refusal_notices.py what a human and the log are told about a delivery that refusal held: one notice per
                             refusal, each with its own recovery. A quoted receipt marker is described in prose
                             and never quoted back -- a notice is the orchestrator's own comment, where a receipt
@@ -2856,7 +2883,8 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             candidate the size gate settled, the latter releasing the hold and moving
                             `pr_number` onto the pull request the measured commit is on first -- the reply
                             boundary the kill switch stands past the decomposing-era thread, recording no delivery
-                            (`engine/thread_delivery.py`), and the re-read the inline handler is given
+                            (`engine/thread_delivery.py`), and the re-read the inline handler is given, behind the
+                            captured-completion recovery the dispatcher would ask (`engine/completion_recovery.py`)
       session.py            the locked decomposer session: the spec read, the fresh spawn that pins it -- gated
                             and parked by `engine/retry_budget.py`'s own parking form -- the
                             human-reply resume, and the retirement the drift reset and the continuation both take
@@ -3058,7 +3086,9 @@ workflow/                   publishes labels, transition guards, and the lazy pe
                             fetch -- and behind the relabel ahead of the launch; the issues fetched ahead of the pickup
                             and ahead of the relabel compared as well, a title or body edit either shows handed back
                             for the reroute -- with no pickup posted, or over the handoff that landed with nothing
-                            relabelled or launched; and the stop every ready checkpoint shares (`stops`)
+                            relabelled or launched; the captured-completion recovery the dispatcher would ask,
+                            behind the hold read ahead of the launch (`engine/completion_recovery.py`); and the stop
+                            every ready checkpoint shares (`stops`)
       ready_readings.py     what the ready decision reads between its claimed record and its effects: the thread once,
                             every comment but the pinned one, for the fingerprint, the ratchet, and its receipts
                             (`thread`), holding the decision where it cannot be read; the issue fetched again ahead of

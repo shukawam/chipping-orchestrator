@@ -914,9 +914,10 @@ orchestrator/
                         applied. Each stage hold asks for its exact canonical label, so a recased or bare stage name
                         holds nothing. Beside an auto-rebase anchor only the late claims the reconciliation answers
                         freeze the walk and a read-only park is set aside: the dispatcher holds every handler that
-                        would end the rest, so none of them may freeze the recovery out as well -- and once a
-                        recovery takes the anchor down and lets the tick go on, the coordinator asks the whole
-                        selection again before any rebase behind it (`workflow/engine/base_rewrite.py`)
+                        would end the rest, a captured completion's recovery among them, so none of them may freeze
+                        the recovery out as well -- and once a recovery takes the anchor down and lets the tick go
+                        on, the coordinator asks the whole selection again before any rebase behind it
+                        (`workflow/engine/base_rewrite.py`), where a capture holds the branch for its own recovery
       frozen.py         which records hold a checkout still and what ends each freeze: the ones that freeze a
                         branch by their presence -- the late reading, the approval, and the terms of a squash
                         mid-rewrite among them, each read as the whole GROUP its write puts down rather than as
@@ -941,7 +942,12 @@ orchestrator/
                         first would rewrite the docs commit before anything verified it; and that completion's
                         own run of its final head -- `docs_final_provenance` naming as its evidence the transaction
                         `verification_evidence_pending` still holds -- until it settles or is abandoned, since a
-                        rewrite first would leave the run testing a head the pull request left -- the two parks
+                        rewrite first would leave the run testing a head the pull request left; and a captured
+                        developer completion -- `developer_completion` on the comment and not spelled whole as a
+                        handed-off or retired capture, a shape nobody can read included -- until the transfer that
+                        hands its report to the delivery or a guarded invalidation resolves it, since the
+                        dispatcher's recovery behind the refresh hands it on only while the checkout stands on the
+                        commit it reported on; the usage receipts beside it hold nothing -- the two parks
                         that freeze one
                         with no record behind them at all
                         (a size reading nobody could take, and an implementer timeout whose watermark names a
