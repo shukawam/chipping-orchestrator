@@ -48,3 +48,19 @@ class DefaultOnSwitchConfigTest(unittest.TestCase):
 
     def test_community_pr_sweep_off_disables(self) -> None:
         self.assertFalse(_reload.load_config({"COMMUNITY_PR_SWEEP": "off"}).COMMUNITY_PR_SWEEP)
+
+
+class StderrLogLevelConfigTest(unittest.TestCase):
+    """STDERR_LOG_LEVEL is empty (stderr keeps every line) unless named, and a
+    name logging does not know stops the import instead of the first log call."""
+
+    def test_default_is_empty(self) -> None:
+        self.assertEqual(_reload.load_config().STDERR_LOG_LEVEL, "")
+
+    def test_value_is_normalized(self) -> None:
+        config = _reload.load_config({"STDERR_LOG_LEVEL": " warning "})
+        self.assertEqual(config.STDERR_LOG_LEVEL, "WARNING")
+
+    def test_unknown_level_is_rejected(self) -> None:
+        message = _reload.config_error_message({"STDERR_LOG_LEVEL": "loud"})
+        self.assertIn("STDERR_LOG_LEVEL='loud'", message)

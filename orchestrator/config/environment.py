@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any, NoReturn
 from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
-from orchestrator.config import credentials, layout, repositories
+from orchestrator.config import credentials, layout, log_levels, repositories
 from orchestrator.config._dotenv import _TRUE_VALUES, load_dotenv
 from orchestrator.config.models import RepoSpec
 from orchestrator.service import paths as _service_paths
@@ -324,6 +324,9 @@ class _SettingsResolver:
                 1, int(env.get("SHUTDOWN_GRACE_SECONDS", "30")),
             ),
             "LOG_DIR": Path(env.get("LOG_DIR", str(self._repo_root / "logs"))),
+            "STDERR_LOG_LEVEL": log_levels.parse_stderr_log_level(
+                env.get("STDERR_LOG_LEVEL", ""), self._config_error,
+            ),
             "EVENT_LOG_PATH": Path(event_log_raw) if event_log_raw else None,
         }
 

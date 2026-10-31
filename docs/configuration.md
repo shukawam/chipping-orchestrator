@@ -1122,6 +1122,11 @@ error.
   (`LOG_DIR/analytics.jsonl`). In a source checkout this is `<checkout>/logs`; in an installed package it is inside
   the Python environment's `site-packages`, where recreating or uninstalling the environment can delete logs.
   `configure` ([basic setup](#basic-setup)) sets an absolute `LOG_DIR` outside that environment.
+- `STDERR_LOG_LEVEL` — default empty. the lowest level the stderr stream still carries while the `LOG_DIR` file is
+  attached (`DEBUG`, `INFO`, `WARNING`, `ERROR`, `CRITICAL`, case-insensitive; any other value fails at startup).
+  Empty keeps every line on both. Set it when a supervisor appends stderr to a file nothing rotates (launchd's
+  `StandardErrorPath`), so the full record stays in the rotated `orchestrator.log` alone. Without the file, stderr is
+  the only record and keeps every line regardless
 - `AGENT_GIT_NAME` — default `chipping-orchestrator`. `GIT_AUTHOR_NAME`/`GIT_COMMITTER_NAME` injected into agent
   spawns, and the name on the commits the orchestrator creates itself: the approval squash is authored and committed
   under it, and the documenting pass's `PR_REF_IN_SUBJECT` replacement of the `docs:` commit is committed under it

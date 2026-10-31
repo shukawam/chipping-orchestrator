@@ -105,6 +105,7 @@ __all__ = [
     "REVIEW_TIMEOUT",
     "SHUTDOWN_GRACE_SECONDS",
     "SQUASH_ON_APPROVAL",
+    "STDERR_LOG_LEVEL",
     "TARGET_REPO_ROOT",
     "TERMINAL_ARTIFACT_CLEANUP_INTERVAL_SECONDS",
     "TERMINAL_ARTIFACT_CLEANUP_TIMEZONE",
@@ -236,6 +237,13 @@ SHUTDOWN_GRACE_SECONDS: int = _RESOLVED["SHUTDOWN_GRACE_SECONDS"]
 # terminal `run.sh` was started in. Already covered by the `*.log` .gitignore
 # rule.
 LOG_DIR: Path = _RESOLVED["LOG_DIR"]
+
+# The lowest level the stderr stream still carries while the rotating file
+# under `LOG_DIR` is attached. Empty (the default) keeps every line on both,
+# as before; a level such as WARNING leaves the full record to the file alone,
+# for a supervisor that appends stderr to a file nothing ever rotates. With no
+# file, stderr is the only record and keeps every line regardless.
+STDERR_LOG_LEVEL: str = _RESOLVED["STDERR_LOG_LEVEL"]
 
 # Optional JSONL sink for structured audit events. When set, `GitHubClient`
 # (and `FakeGitHubClient`) append one JSON object per line whenever a

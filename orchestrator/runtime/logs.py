@@ -34,8 +34,13 @@ def rotating_file_handler() -> logging.Handler:
 
 
 def configure_logging(level: str) -> None:
-    """Configure stderr plus best-effort rotating file logging."""
-    log_handlers: list[logging.Handler] = [logging.StreamHandler()]
+    """Configure stderr plus best-effort rotating file logging.
+
+    `STDERR_LOG_LEVEL` thins the stderr stream only once the file is attached:
+    without the file, stderr is the only record and keeps every line.
+    """
+    stderr_handler = logging.StreamHandler()
+    log_handlers: list[logging.Handler] = [stderr_handler]
     try:
         log_handlers.append(rotating_file_handler())
     except OSError as error:
@@ -50,6 +55,8 @@ def configure_logging(level: str) -> None:
             error,
         )
         return
+    if config.STDERR_LOG_LEVEL:
+        stderr_handler.setLevel(config.STDERR_LOG_LEVEL)
     logging.basicConfig(
         level=level,
         format=_LOG_FORMAT,
