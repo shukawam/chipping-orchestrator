@@ -33,7 +33,11 @@ def _opt_in_refuses(
     if not opt_in_label or label not in _GATED_STAGES:
         return False
     if not _labels.issue_has_label(issue, opt_in_label):
-        return _refused(spec, issue, "does not carry the opt-in label")
+        # Most open issues never carry the label and recur every poll, so
+        # this refusal stays out of the INFO log.
+        return _refused(
+            spec, issue, "does not carry the opt-in label", level=logging.DEBUG,
+        )
     try:
         applier = _labels.last_labeler(issue, opt_in_label)
     except Exception:
@@ -48,8 +52,15 @@ def _opt_in_refuses(
     return False
 
 
-def _refused(spec: _config_models.RepoSpec, issue: Issue, reason: str) -> bool:
-    log.info(
+def _refused(
+    spec: _config_models.RepoSpec,
+    issue: Issue,
+    reason: str,
+    *,
+    level: int = logging.INFO,
+) -> bool:
+    log.log(
+        level,
         "repo=%s issue=#%s %s; skipping (PICKUP_LABEL=%r)",
         spec.slug, issue.number, reason, config.PICKUP_LABEL,
     )
